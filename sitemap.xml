@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://leakfa.com/</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/search</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/about</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/leaks</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/notify</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/donate</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/faq</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/policy</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/stat</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://leakfa.com/hash</loc>
+  <lastmod>2020-09-14T07:07:10+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
