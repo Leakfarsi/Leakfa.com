@@ -176,7 +176,7 @@ function subscribe($name, $email, $hash){
             $content = EMAIL_TEST_CONTENT;
             $account = get_account($email, $hash);
             if($account['name']){
-                $res['error'] = 'This email has subscribed to leaked messages, and a test letter will be sent to you.';
+                $res['error'] = 'این ایمیل در باخبرم کن قبلا ثبت شده است، یک نامه آزمایشی برای شما ارسال می‌شود.';
                 $content = str_replace("§name§", $name, $content);
                 simple_email($email, $name, EMAIL_TEST_SUBJECT, $content, $code);
             }else{
