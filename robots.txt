@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /verify.php
+Disallow: /src
+Disallow: /api
+Disallow: /ie.html
+Sitemap: https://leakfa.com/sitemap.xml
