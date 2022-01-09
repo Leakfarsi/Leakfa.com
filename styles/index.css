@@ -1,0 +1,192 @@
+/*
+Author:         Leakfa Team
+Author URI:     https://leakfa.com
+Version:        2.6.0
+*/
+
+@font-face {
+    font-family: Vazir;
+    src: url('fonts/Vazir-Medium.eot');
+    src: url('fonts/Vazir-Medium.eot?#iefix') format('embedded-opentype'),
+         url('fonts/Vazir-Medium.woff2') format('woff2'),
+         url('fonts/Vazir-Medium.woff') format('woff'),
+         url('fonts/Vazir-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+:root {
+    --theme-color: #3f617b;
+    --theme-color-darker: #394e65;
+    --bold: 500;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-size: 14px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Vazir;
+    font-weight: 500;
+}
+
+.container {
+    flex: 1;
+}
+
+.padded.container {
+    max-width: 600px;
+    margin: 10px auto;
+}
+
+nav {
+    background: var(--theme-color-darker);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--theme-color-darker);
+}
+
+/* Button */
+.btn-outline-dark:hover {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+.btn-outline-dark {
+    color: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+/* Cute titles */
+.jumbotron {
+    background: var(--theme-color);
+    color: #FFF
+}
+
+footer.jumbotron {
+    margin-bottom: 0;
+    padding: 1rem 0;
+    font-weight: var(--bold);
+    font-size: 1.1em
+}
+
+footer.jumbotron p {
+    margin-bottom: 0;
+}
+
+.display-4 {
+    font-weight: var(--bold);
+}
+
+/* Inner title */
+h1.breach-title {
+    font-size: 32px;
+}
+
+h4.breach-title {
+    font-size: 18px;
+}
+
+.breach-title {
+    background: var(--theme-color);
+    background-size: 100vw auto;
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 3px;
+    color: #FFF;
+    font-weight: var(--bold);
+}
+
+h3.breach-title+p {
+    margin-top: 0
+}
+
+p+h3.breach-title {
+    margin-top: 24px
+}
+
+/* Leaky incident card */
+.breaches {
+    column-count: 3;
+    column-gap: 10px;
+    padding-top: 10px;
+}
+
+@media (max-width: 991px) {
+    .breaches {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .breaches {
+        column-count: 1;
+    }
+}
+
+.breach {
+    background: var(--theme-color-darker);
+    background-size: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    break-inside: avoid;
+    color: #FFF;
+}
+
+.breach .tags:not(:empty) {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 5px 9px;
+}
+
+.breach .tags .btn {
+    border-radius: 4px;
+}
+
+.breach .header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 9px;
+    border-radius: 4px 4px 0 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
+
+.breach .header .title {
+    font-size: 24px;
+    line-height: 48px;
+    font-weight: var(--bold);
+}
+
+.breach .header .magnitude {
+    text-align: right;
+}
+
+.breach .header .magnitude>div:nth-child(1) {
+    font-size: .7rem;
+}
+
+.breach .header .magnitude>div:nth-child(2) {
+    font-size: 20px;
+}
+
+.breach .content {
+    padding: 5px 9px;
+}
+
+.breach .content h4 {
+    display: inline-block;
+    font-size: 18px;
+}
+
+.breach .content h4+p {
+    margin-top: 0;
+}
+
+.breach .content a {
+    color: #64adff;
+}
