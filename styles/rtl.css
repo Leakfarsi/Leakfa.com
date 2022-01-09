@@ -1,0 +1,34 @@
+/*
+Author:         Leakfa Team
+Author URI:     https://leakfa.com
+Version:        1.1.0
+*/
+
+/* bootstrap */
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #e2e2e2;
+    direction: rtl;
+}
+.dropdown-menu {
+  right: 0;
+  left: auto;
+  padding-right: 1px;
+  padding-left: 1px;
+}
+.dropdown-item {
+    text-align: right;
+}
+.form-control {
+    direction: ltr;
+}
+.breach .header .magnitude {
+    text-align: left;
+}
+
+/* style */
+
+body {
+    text-align: right;
+	direction: rtl;
+}
