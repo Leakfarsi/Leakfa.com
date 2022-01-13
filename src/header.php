@@ -76,6 +76,11 @@ require 'config.php';
                                 <img src="/images/email.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://github.com/Leakfarsi/Leakfa.com" target="_blank">
+                                <img src="/images/github.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
