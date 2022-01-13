@@ -41,9 +41,9 @@ require 'config.php';
                         <li class="nav-item <?= $uri == '/leaks' ? 'active' : '' ?>">
                             <a class="nav-link" href="leaks">نشت‌های عمده</a>
                         </li>
-			            <li class="nav-item <?= $uri == '/notify' ? 'active' : '' ?>">
-				            <a class="nav-link" href="notify">باخبرم کن</a>
-			            </li>
+                        <li class="nav-item <?= $uri == '/notify' ? 'active' : '' ?>">
+                            <a class="nav-link" href="notify">باخبرم کن</a>
+                        </li>
                         <li class="nav-item <?= $uri == '/donate' ? 'active' : '' ?>">
                             <a class="nav-link" href="donate">حمایت مالی</a>
                         </li>
