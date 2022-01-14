@@ -1,1 +1,2 @@
-requests==2.22.0
+requests v2.22.0 or later
+python -m pip install requests
