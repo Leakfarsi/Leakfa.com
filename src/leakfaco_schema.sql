@@ -80,7 +80,8 @@ CREATE TABLE `breach_source` (
   `time` date NOT NULL,
   `major` tinyint(1) NOT NULL DEFAULT '0',
   `file` tinyint(1) NOT NULL DEFAULT '0',
-  `type` text COLLATE utf8mb4_unicode_ci NOT NULL
+  `type` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `anchor` text COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
