@@ -25,7 +25,7 @@
 			<?php foreach (get_major_breaches() as $_ => $val) { ?>
 				<div class="breach">
 					<div class="header">
-						<div class="title"><?= $val['name'] ?></div>
+						<div class="title" id="<?= $val['anchor'] ?>"><?= $val['name'] ?></div>
 						<div class="magnitude">
 							<div>بزرگی نشت</div>
 							<div><?= number_format($val['round_k'] * 1000) ?></div>
