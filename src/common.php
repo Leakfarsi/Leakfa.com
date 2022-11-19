@@ -17,7 +17,7 @@ function get_breach_type_count($major){
 
 function get_major_breaches(){
     global $db;
-    $stmt = $db->prepare("SELECT `id`,`name`,`description`,`round_k` FROM `breach_source` WHERE `major`=1 ORDER BY `round_k` DESC");
+    $stmt = $db->prepare("SELECT `id`,`name`,`anchor`,`description`,`round_k` FROM `breach_source` WHERE `major`=1 ORDER BY `round_k` DESC");
 	$stmt->execute();
     $res = $stmt->fetchall(PDO::FETCH_ASSOC);
     return $res;
