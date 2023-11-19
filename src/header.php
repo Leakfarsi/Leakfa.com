@@ -26,7 +26,7 @@ require 'config.php';
             <div class="container">
                 <a class="navbar-brand" href="index.php">
                     <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
-                    لیکفا | Leakfa
+                    لیک‌فا | Leakfa
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
                     <span class="navbar-toggler-icon"></span>
@@ -41,9 +41,9 @@ require 'config.php';
                         <li class="nav-item <?= $uri == '/leaks.php' ? 'active' : '' ?>">
                             <a class="nav-link" href="leaks.php">نشت‌های عمده</a>
                         </li>
-                        <li class="nav-item <?= $uri == '/notify.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="notify.php">باخبرم کن</a>
-                        </li>
+			            <li class="nav-item <?= $uri == '/notify.php' ? 'active' : '' ?>">
+				            <a class="nav-link" href="notify.php">باخبرم کن</a>
+			            </li>
                         <li class="nav-item <?= $uri == '/donate.php' ? 'active' : '' ?>">
                             <a class="nav-link" href="donate.php">حمایت مالی</a>
                         </li>
@@ -53,7 +53,7 @@ require 'config.php';
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">سایر</a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item <?= $uri == '/policy.php' ? 'active' : '' ?>" href="policy.php">خط مشی</a>
+							    <a class="dropdown-item <?= $uri == '/policy.php' ? 'active' : '' ?>" href="policy.php">خط مشی</a>
                                 <a class="dropdown-item <?= $uri == '/about.php' ? 'active' : '' ?>" href="about.php">درباره ما</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item <?= $uri == '/stat.php' ? 'active' : '' ?>" href="stat.php">آمار ها</a>
