@@ -20,7 +20,7 @@
 		}
 
 		body {
-			background-image: url('images/iran.jpg');
+			background-image: url('images/bg/back.jpg');
 			background-size: cover;
 			background-repeat: no-repeat;
 			background-position: center center;
