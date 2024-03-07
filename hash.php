@@ -63,7 +63,7 @@
         $('#search_hash_form').on("submit", function(e) {
             e.preventDefault();
             let el = e.target;
-            search_func(el);
+            two_step(el);
         });
     </script>
 
