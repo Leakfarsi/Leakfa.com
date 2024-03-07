@@ -29,6 +29,7 @@
             </div>
             <button type="submit" id="search" class="btn btn-outline-dark btn-block">جستجو</button>
         </form>
+            <div id="searchResults"></div>
     </div>
     <script src="https://www.google.com/recaptcha/api.js?render=<?=RECAPTCHA_SITE_KEY?>"></script>
     <script>const RECAPTCHA_SITE_KEY='<?= RECAPTCHA_SITE_KEY?>'</script>
