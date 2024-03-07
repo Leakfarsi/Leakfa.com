@@ -40,6 +40,7 @@
             e.preventDefault();
             let el = e.target;
             one_step(el);
+        $('#phone').val('');
         });
     </script>
 
