@@ -86,6 +86,7 @@ async function search_by_core(hash, hashed = false) {
             <br>
         </div>`;
             searchResultsDiv.innerHTML = resultsHTML;
+             searchResultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } else {
             let iconHTML = '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" class="success-icon"><path fill="green" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 9l-5 5-5-5 1.41-1.41L12 13.17l3.59-3.58L17 11z"/></svg></div>';
             let footerLinks = '<div class="swal2-footer" style="display: flex;"><a href="/notify">وقتی نشتی پیدا شد باخبرم کن!</a></div>';
@@ -99,6 +100,7 @@ async function search_by_core(hash, hashed = false) {
             <br>
         </div>`;
             searchResultsDiv.innerHTML = resultsHTML;
+             searchResultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
 
         } else {
