@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.1.0
+Version:        3.1.2
 */
 
 if (!sessionStorage.popup) {
