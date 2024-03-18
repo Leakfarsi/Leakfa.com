@@ -1,18 +1,59 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.1.2
+Version:        3.3.2
 */
 
-if (!sessionStorage.popup) {
-   sessionStorage.popup = true
-   Swal.fire({
+function setCookie(cname, cvalue, exdays) {
+    try {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    } catch (error) {
+        console.error('Error setting cookie:', error);
+    }
+}
+
+function getCookie(cname) {
+    try {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    } catch (error) {
+        console.error('Error getting cookie:', error);
+        return "";
+    }
+}
+
+function checkPopupDisplayed() {
+    var popupDisplayed = getCookie("popupDisplayed");
+    return popupDisplayed === "true";
+}
+
+function displayPopup() {
+    setCookie("popupDisplayed", "true", 30); // Expire in 30 days
+    Swal.fire({
        type: 'info',
        title: 'نکته مهم:',
        confirmButtonText: "باشه", 
        width:'90%',
        html: '<p>هنگام وارد کردن شماره تلفن همراه از کیبورد اعداد انگلیسی و هنگام وارد کردن آدرس ایمیل از حروف کوچک برای نگارش استفاده کنید، در غیر این صورت هش متفاوتی تولید شده و نتیجه دیگری به شما نمایش داده می‌شود.</p>'
-   });
+    });
+}
+
+if (!checkPopupDisplayed()) {
+   displayPopup();
 }
 
 const delay = s => {
@@ -34,10 +75,32 @@ function one_step(form) {
     search_by_core(sha1(form.phone.value));
 }
 
+function incrementSearchCount() {
+    var searchCount = parseInt(getCookie("searchCount")) || 0;
+    searchCount++;
+    setCookie("searchCount", searchCount, 1); // Expire in 1 day
+}
+
+function checkSearchLimit() {
+    var searchCount = parseInt(getCookie("searchCount")) || 0;
+    if (searchCount >= 20) { // Search limit
+        showToast("شما به حد مجاز استفاده از جستجوی نشت رسیده‌اید، لطفاً کمی صبر کنید و یا از API استفاده کنید.");
+        return true;
+    }
+    return false;
+}
+
 async function search_by_core(hash, hashed = false) {
+    if (checkSearchLimit()) {
+        return;
+    }
+
+    incrementSearchCount();
+
+
   $('#search').attr('disabled', true);
   if (!hashed) {
-    $('#search')[0].blur(); // HTMLElement API
+    $('#search')[0].blur();
     $('#search').text('درحال کدگذاری...')[0];
     showToast('درحال کدگذاری...');
     await delay(700);
@@ -125,14 +188,21 @@ function two_step(form) {
 }
 
 async function search_by_hash(hash, hashed = false) {
-    $('#search').attr('disabled', true);
-    if (!hashed) {
-        $('#search')[0].blur(); // HTMLElement API
-        $('#search').text('درحال کدگذاری...')[0];
-        showToast('درحال کدگذاری...');
-        await delay(700);
-        Swal.close();
+    if (checkSearchLimit()) {
+        return;
     }
+
+    incrementSearchCount();
+
+
+  $('#search').attr('disabled', true);
+  if (!hashed) {
+    $('#search')[0].blur();
+    $('#search').text('درحال کدگذاری...')[0];
+    showToast('درحال کدگذاری...');
+    await delay(700);
+    Swal.close();
+  }
 
     showToast('درحال جستجو...');
     $('#search').text('در حال جستجو...');
