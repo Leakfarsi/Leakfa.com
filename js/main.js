@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.3.2
+Version:        3.3.3
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -265,7 +265,7 @@ function subscribe_func(form) {
         let param = new URLSearchParams({
             "hash": hash,
             "email": form.subscribe_form_email.value,
-            "name": form.subscribe_form_fullname.value,
+            "name": $('<div>').text(form.subscribe_form_fullname.value).html(),
             "token": token
         });
         fetch('/api/subscribe.php?' + param.toString())
