@@ -1,0 +1,136 @@
+/*
+Author:         Leakfa Team
+Author URI:     https://leakfa.com
+Version:        1.0.0
+*/
+
+/* Container and Layout */
+.donate-crypto-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.coin-chooser {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.change-coin-arrow {
+    font-size: 24px;
+    cursor: pointer;
+    color: #555;
+    padding: 0 10px;
+    user-select: none;
+}
+
+.change-coin-arrow:hover {
+    color: #333;
+}
+
+.arrow-divider {
+    flex-grow: 1;
+    border-bottom: 1px solid #ddd;
+    margin: 0 10px;
+}
+
+#coins-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 2;
+}
+
+.coin-logo {
+    max-width: 80px;
+    max-height: 80px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.coin-logo:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* Address Display Section */
+#address-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.address-display {
+    margin-top: 10px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+}
+
+#address-text {
+    width: 100%;
+    cursor: pointer;
+    font-family: monospace;
+    background-color: #f1f1f1;
+}
+
+#qr {
+    max-width: 150px;
+    max-height: 150px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    transition: transform 0.2s ease-in-out;
+}
+
+#qr:hover {
+    transform: scale(1.05);
+}
+
+/* Styles for the copied message */
+.copy-message {
+    color: green;
+    font-size: 14px;
+    margin-top: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .donate-crypto-widget {
+        padding: 15px;
+    }
+
+    .coin-logo {
+        max-width: 60px;
+        max-height: 60px;
+    }
+
+    .change-coin-arrow {
+        font-size: 20px;
+    }
+
+    #address-text {
+        font-size: 14px;
+    }
+
+    #qr {
+        max-width: 120px;
+        max-height: 120px;
+    }
+}
