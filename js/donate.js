@@ -7,37 +7,37 @@ Version:        1.0.0
 const coins = [
     {
         name: "Bitcoin",
-        address: "bc1qacqns7cvsr3t7nm6tlpamss7xnk7yffqtl6ydx",
+        address: "bc1qcggr0e9yse2pmsvkpdxaaf3eg06klu5h7pzdj3",
         qr: "images/donate/btcQR.jpg",
         logo: "images/donate/btcButtonLogo.png"
     },
     {
         name: "Ethereum",
-        address: "0x7Ecb682B67610DE8e59cB0b8897c6FF56566216f",
+        address: "0xb85298B60AA6A40d4eC462E0Eb8A958d7c735df3",
         qr: "images/donate/ethQR.jpg",
         logo: "images/donate/ethButtonLogo.png"
     },
     {
         name: "BNB",
-        address: "0x7Ecb682B67610DE8e59cB0b8897c6FF56566216f",
+        address: "0xb85298B60AA6A40d4eC462E0Eb8A958d7c735df3",
         qr: "images/donate/bnbQR.jpg",
         logo: "images/donate/bnbButtonLogo.png"
     },
     {
         name: "TON",
-        address: "EQAOQ3bt03RbvhrjD4ojTX9NgyJGrC80wOGhkj1KK1KYmoNt",
+        address: "EQBjfUvqsVTRidYUvA-lahY2NX8HEB2GQrGU7SYlISHA9cCw",
         qr: "images/donate/tonQR.jpg",
         logo: "images/donate/tonButtonLogo.png"
     },
     {
         name: "Litecoin",
-        address: "ltc1q40mq9250eawwjnw4wrqe4zc9ese7cz37rj86rq",
+        address: "ltc1q0zyrmlrxyjf266ha3kdnanzkaclvv357faq8e3",
         qr: "images/donate/ltcQR.jpg",
         logo: "images/donate/ltcButtonLogo.png"
     },
     {
         name: "USDT (TRC20)",
-        address: "TQBqd7fMz4Af4Co9V8QJwx5DMDiDxgxtAv",
+        address: "TTgkifzuHTeoV1wPvzvdnejUpEvmxkzgi2",
         qr: "images/donate/usdtQR.jpg",
         logo: "images/donate/usdtButtonLogo.png"
     },
