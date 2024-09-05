@@ -20,7 +20,7 @@
             <div class="right-arrow change-coin-arrow" onclick="nextCoin()">&#9664;</div>
         </div>
         <div id="address-display">
-            <input type="text" id="address-text" class="address-display" value="bc1qacqns7cvsr3t7nm6tlpamss7xnk7yffqtl6ydx" readonly onclick="copyAddress()" />
+            <input type="text" id="address-text" class="address-display" value="bc1qcggr0e9yse2pmsvkpdxaaf3eg06klu5h7pzdj3" readonly onclick="copyAddress()" />
             <img id="qr" src="images/donate/btcQR.png" alt="QR Code" class="address-display" />
             <span id="copy-message" class="copy-message">!Copied to clipboard</span>
         </div>
