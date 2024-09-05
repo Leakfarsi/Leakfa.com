@@ -9,59 +9,90 @@
 	<link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php include 'src/og.php'; ?>
-	<style>
-		html,
-		body {
-			height: 100%;
-			width: 100%;
-			color: #FFF;
-			font-family: 'Lalezar', cursive;
-			direction: rtl;
-		}
+<style>
+    html,
+    body {
+        height: 100%;
+        width: 100%;
+        color: #FFF;
+        font-family: 'Lalezar', cursive;
+        direction: rtl;
+        margin: 0;
+        padding: 0;
+    }
 
-		body {
-			background-image: url('images/bg/back.jpg');
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-position: center center;
-		}
+    body {
+        background-image: url('images/bg/6102022.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
 
-		#container {
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			background: radial-gradient(ellipse at center, rgb(27 27 27 / 50%) 0%, rgb(27 27 27 / 65%) 100%);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex-direction: column;
-			text-align: center;
-		}
+    #container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, rgb(27 27 27 / 50%) 0%, rgb(27 27 27 / 65%) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        animation: fadeIn 2s ease-in-out;
+    }
 
-		h1 {
-			font-size: 70px;
-			font-weight: bold;
-		}
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
 
-		h3 {
-			font-size: 32px;
-		}
+    h1 {
+        font-size: 70px;
+        font-weight: bold;
+        animation: slideUp 1s ease-out;
+    }
 
-		.btn {
-			border: 2px solid #f8f9fa;
-			font-weight: bold;
-		}
+    h3 {
+        font-size: 32px;
+        animation: slideUp 1.2s ease-out;
+    }
 
-		@media (max-width: 768px) {
-			h1 {
-				font-size: 28px;
-			}
+    .btn {
+        border: 2px solid #f8f9fa;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+        animation: slideUp 1.4s ease-out;
+    }
 
-			h3 {
-				font-size: 16px;
-			}
-		}
-	</style>
+    @keyframes slideUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 28px;
+        }
+
+        h3 {
+            font-size: 16px;
+        }
+    }
+</style>
 </head>
 
 <body>
