@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        1.0.0
+Version:        1.1.0
 */
 
 const coins = [
@@ -34,6 +34,12 @@ const coins = [
         address: "ltc1q0zyrmlrxyjf266ha3kdnanzkaclvv357faq8e3",
         qr: "images/donate/ltcQR.jpg",
         logo: "images/donate/ltcButtonLogo.png"
+    },
+    {
+        name: "Tron",
+        address: "TTgkifzuHTeoV1wPvzvdnejUpEvmxkzgi2",
+        qr: "images/donate/trxQR.jpg",
+        logo: "images/donate/trxButtonLogo.png"
     },
     {
         name: "USDT (TRC20)",
