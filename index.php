@@ -1,15 +1,53 @@
 <?php include 'src/config.php'; ?>
 <!DOCTYPE HTML>
-<html>
-
+<html lang="fa" dir="rtl">
 <head>
-	<title>Leakfa: Iranian Leakage Tracking System | لیکفا: سامانه ردیابی نشت اطلاعات ایرانیان</title>
+	<title>Leakfa | سامانه ردیابی نشت اطلاعات ایرانیان</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<meta name="description" content="این سرویس یک سامانه ردیابی و جستجوی نشت اطلاعات شخصی ویژه کاربران ایرانی است. با بررسی نقض‌های امنیتی بزرگ، به شما اطلاع می‌دهد که آیا اطلاعاتتان در معرض افشا قرار گرفته است یا خیر. همچنین با ارائه راهکارهای امنیتی، به افزایش آگاهی و سواد سایبری کاربران کمک می‌کند.">
+	<meta name="keywords" content="Leakfa, Iranian leakage, data breach tracking, لیکفا, نشت اطلاعات, سامانه ردیابی">
+	<meta name="robots" content="index, follow">
+	<meta name="author" content="Leakfa Team">
+	<meta property="og:title" content="Leakfa | لیک‌فا">
+	<meta property="og:description" content="سامانه ردیابی نشت اطلاعات ایرانیان">
+	<meta property="og:image" content="https://leakfa.com/images/og-image.png">
+	<meta property="og:url" content="https://leakfa.com/">
+	<meta property="og:type" content="website">
+	<meta name="twitter:card" content="summary_large_image">
+	<link rel="canonical" href="https://leakfa.com/">
+  
+  	<!-- Favicon -->
+	<link rel="icon" type="image/png" href="/images/fav/favicon-96x96.png" sizes="96x96" />
+	<link rel="icon" type="image/svg+xml" href="/images/fav/favicon.svg" />
+	<link rel="shortcut icon" href="/images/fav/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/images/fav/apple-touch-icon.png" />
+	<meta name="apple-mobile-web-app-title" content="Leakfa" />
+	<link rel="manifest" href="/images/fav/site.webmanifest" />
+  
+  	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<?php include 'src/og.php'; ?>
-<style>
+  
+  	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  	<!-- Mobile Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  	<!-- Structured Data -->
+	<script type="application/ld+json">
+	{
+     "@context": "https://schema.org",
+     "@type": "WebSite",
+     "name": "Leakfa: Iranian Data Breach Monitoring System",
+     "description": "سامانه ردیابی نشت اطلاعات ایرانیان",
+     "url": "https://leakfa.com/"
+	}
+	</script>
+  
+  	<!-- Styles -->
+	<style>
     html,
     body {
         height: 100%;
@@ -22,10 +60,7 @@
     }
 
     body {
-        background-image: url('images/bg/6102022.jpg');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center center;
+        background: url('images/background.webp') no-repeat center center / cover fixed;
     }
 
     #container {
@@ -101,8 +136,8 @@
 		<h3>سامانه ردیابی نشت اطلاعات ایرانیان</h3>
 		<br/>
 		<div>
-			<a href="search" class="btn btn-outline-light">جستجوی نشت</a>
-			<a href="about" class="btn btn-outline-light">درباره ما</a>
+			<a href="search.php" class="btn btn-outline-light">جستجوی نشت</a>
+			<a href="about.php" class="btn btn-outline-light">درباره ما</a>
 		</div>
 	</div>
 </body>
