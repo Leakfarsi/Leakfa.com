@@ -8,11 +8,11 @@ if(!is_sha1($_GET['hash'])){
 	$res['error'] = 'Input format error';
 }
 
-if($_GET['mode'] == 'recaptcha'){
-    $captcha = recaptcha_verify($_GET['token']);
+if($_GET['mode'] == 'turnstile'){
+    $captcha = turnstile_verify($_GET['token']);
     if(!$captcha->success){
         $res['status'] = '1';
-        $res['error'] = 'reCAPTCHA failed';
+        $res['error'] = 'Turnstile verification failed';
     }
 }else if($_GET['mode'] == 'pow'){
     if (substr(sha1($_GET['hash'] . $_GET['nonce']), 0, POW_DIFF) != str_repeat('a', POW_DIFF)){
