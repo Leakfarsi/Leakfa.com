@@ -1,7 +1,7 @@
-<?php $title = 'جستجوی نشت';
+    <?php $title = 'جستجوی نشت';
         require 'src/header.php';
     ?>
-
+    
     <header class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1 ><?=$title?></h1>
@@ -9,8 +9,8 @@
     </header>
 
     <div class="padded container">
-        <h1 class="breach-title">سوابق نشت را جستجو کنید</h1>
-        <p>برای جستجوی سوابق نشت، لطفا شماره تلفن‌همراه یا آدرس ایمیل خود را وارد کنید. برای جلوگیری از ارسال مستقیم اطلاعات، سامانه ابتدا داده‌ها را کدگذاری می کند و سپس نتایج عملیات را به شما نشان می دهد. <br/>هنوز نگران هستید؟ <a href="hash">در اینجا نسخه‌ای با عملیات جداگانه وجود دارد.</a></p>
+        <h1 class="breach-title">آیا اطلاعات شما در معرض خطر است؟</h1>
+        <p>برای بررسی نشت اطلاعات، لطفاً شماره تلفن همراه یا آدرس ایمیل خود را وارد کنید. برای حفظ امنیت و حریم خصوصی شما، این سامانه ابتدا داده‌ها را رمزگذاری کرده و سپس نتیجه را نمایش می‌دهد. <br/>نگران امنیت اطلاعات خود هستید؟ <a href="hash">می‌توانید از نسخه‌ای با پردازش جداگانه استفاده کنید.</a></p>
         <form id="search_form">
             <div class="form-group">
                 <label for="phone">تلفن همراه یا آدرس ایمیل</label>
@@ -31,8 +31,7 @@
         </form>
             <div id="searchResults"></div>
     </div>
-    <script src="https://www.google.com/recaptcha/api.js?render=<?=RECAPTCHA_SITE_KEY?>"></script>
-    <script>const RECAPTCHA_SITE_KEY='<?= RECAPTCHA_SITE_KEY?>'</script>
+    <script>const TURNSTILE_SITE_KEY='<?= TURNSTILE_SITE_KEY?>'</script>
     <script src="/js/main.js"></script>
 
     <script>
@@ -44,4 +43,4 @@
         });
     </script>
 
-    <?php require 'src/footer.php'; ?>
+<?php require 'src/footer.php'; ?>
