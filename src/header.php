@@ -4,16 +4,32 @@ require 'config.php';
 <!DOCTYPE html>
 <html>
     <head>
-        <title><?= isset($title) ? $title . ' | ' : '' ?>سامانه ردیابی نشت اطلاعات ایرانیان</title>
         <meta charset="utf-8" />
+        <title><?= isset($title) ? $title . ' | ' : '' ?>سامانه ردیابی نشت اطلاعات ایرانیان</title>
+
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="/styles/index.css" />
-        <link rel="stylesheet" type="text/css" href="/styles/rtl.css">
-        <link rel="icon" href="/images/logo.svg" />
-        <link rel="icon" href="/images/logo.png" />
+        <link rel="stylesheet" type="text/css" href="/styles/main.css" />
+      
+      	<!-- Favicon -->
+		<link rel="icon" type="image/png" href="/images/fav/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/images/fav/favicon.svg" />
+		<link rel="shortcut icon" href="/images/fav/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/images/fav/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="Leakfa" />
+		<link rel="manifest" href="/images/fav/site.webmanifest" />
+      
+      	<!-- JavaScript -->
         <script src="https://cdn.jsdelivr.net/gh/emn178/js-sha1/build/sha1.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
+        <script>
+        function onTurnstileLoad() {
+            if (typeof initTurnstileWidget === 'function') {
+                initTurnstileWidget();
+            }
+        }
+        </script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
         <script src="/js/detectIE.js"></script>
@@ -24,8 +40,8 @@ require 'config.php';
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
-                <a class="navbar-brand" href="index.php">
-                    <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                <a class="navbar-brand" href="/">
+                    <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="Leakfa" />
                     لیک‌فا | Leakfa
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
@@ -62,23 +78,28 @@ require 'config.php';
                     </ul>
                     <ul class="navbar-nav my-2 my-lg-0" style="flex-direction: row;">
                         <li class="nav-item">
+                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://t.me/leakfarsi" target="_blank">
+                                <img src="/images/telegram.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Telegram" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://www.youtube.com/leakfarsi" target="_blank">
-                                <img src="/images/youtube.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                                <img src="/images/youtube.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Youtube" />
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://twitter.com/leakfarsi" target="_blank">
-                                <img src="/images/twitter.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                                <img src="/images/twitter.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Twitter" />
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="mailto:info@leakfa.com" target="_blank">
-                                <img src="/images/email.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                                <img src="/images/email.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Email" />
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://github.com/Leakfarsi/Leakfa.com" target="_blank">
-                                <img src="/images/github.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="" />
+                                <img src="/images/github.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Github" />
                             </a>
                         </li>
                     </ul>
