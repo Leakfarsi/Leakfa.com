@@ -300,9 +300,9 @@ function array_remove_null_return_keys($array)
     return array_unique($keys);
 }
 
-function recaptcha_verify($token){
+function turnstile_verify($token){
     $post_data = http_build_query([
-            'secret' => RECAPTCHA_SECRET_KEY,
+            'secret' => TURNSTILE_SECRET_KEY,
             'response' => $token,
             'remoteip' => get_ip()
     ]);
@@ -314,10 +314,11 @@ function recaptcha_verify($token){
         )
     );
     $context  = stream_context_create($opts);
-    $response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+    $response = file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
     $result = json_decode($response);
     return $result;
 }
+
 
 function site_stat(){
     $out = [];
