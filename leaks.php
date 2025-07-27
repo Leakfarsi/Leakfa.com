@@ -6,11 +6,20 @@
 	<header class="jumbotron jumbotron-fluid">
 		<div class="container">
 			<h1><?= $title ?></h1>
-			<p class="lead">در حال حاضر شامل:<br />
-				<?= get_breach_type_count(1) ?> نشت عمده<br />
-				<?= get_breach_type_count(0) ?> نشت جزئی<br />
-				در مجموع <?= get_breach_type_count(0) + get_breach_type_count(1) ?> نشت
-			</p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number"><?= get_breach_type_count(1) ?></div>
+                    <div class="stat-label">نشت عمده</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?= get_breach_type_count(0) ?></div>
+                    <div class="stat-label">نشت جزئی</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number"><?= get_breach_type_count(0) + get_breach_type_count(1) ?></div>
+                    <div class="stat-label">کل نشت‌ها</div>
+                </div>
+            </div>
 		</div>
 	</header>
 
@@ -25,7 +34,7 @@
 			<?php foreach (get_major_breaches() as $_ => $val) { ?>
 				<div class="breach">
 					<div class="header">
-						<div class="title" id="<?= $val['anchor'] ?>"><?= $val['name'] ?></div>
+                    	<div class="title" id="<?= $val['anchor'] ?>" data-clipboard-text="<?= $val['anchor'] ?>"><?= $val['name'] ?></div>
 						<div class="magnitude">
 							<div>بزرگی نشت</div>
 							<div><?= number_format($val['round_k'] * 1000) ?></div>
@@ -39,28 +48,64 @@
 						</div>
 					<?php } ?>
 					<div class="content">
-						<h4>موارد افشا شده</h4>
+						<h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10,9 9,9 8,9"></polyline>
+                                </svg>
+                                موارد افشا شده
+                            </h4>
 						<p><?= join('، ', get_leaked_items($val['id'])) ?></p>
-						<h4>روایت</h4>
+						<h4>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                روایت
+                            </h4>
 						<p><?= $val['description'] ?></p>
 					</div>
 				</div>
 			<?php } ?>
 		</div>
 	</div>
-	<script>
-		const tag_details = <?= json_encode(get_tag_details()) ?>;
+<script>
+    const tag_details = <?= json_encode(get_tag_details()) ?>;
 
-		$(`[data-tag-id]`).click(function() {
-			let tagId = $(this).attr(`data-tag-id`);
-			let tag_detail = tag_details.filter(x => x.id == tagId)[0];
-			Swal.fire({
-				type: 'info',
-				title: `${tag_detail.name}`,
-				text: tag_detail.description,
-				confirmButtonText: 'باشه!'
-			});
-		});
-	</script>
+    // Click event for tag buttons
+    $(`[data-tag-id]`).click(function() {
+        let tagId = $(this).attr(`data-tag-id`);
+        let tag_detail = tag_details.filter(x => x.id == tagId)[0];
+        Swal.fire({
+            type: 'info',
+            title: `${tag_detail.name}`,
+            text: tag_detail.description,
+            confirmButtonText: 'باشه!'
+        });
+    });
 
-	<?php require 'src/footer.php'; ?>
+    // Click event for anchor links (title)
+    $(`.title`).click(function() {
+        var anchorLink = $(this).attr('id');
+        var url = window.location.origin + window.location.pathname + "#" + anchorLink;
+
+        var tempInput = document.createElement("input");
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        Swal.fire({
+            type: 'success',
+            title: 'آدرس کپی شد!',
+            text: 'آدرس روایت این نشت در کلیپ‌بورد شما کپی شد.',
+            confirmButtonText: 'باشه!'
+        });
+    });
+</script>
+
+<?php require 'src/footer.php'; ?>
