@@ -1,16 +1,89 @@
-# Leakfa.com
-A simple way to know if you are on the list of major security breaches like "HIBP", but it is specific for Iran. 
+# 🔐 لیک‌فا (Leakfa.com)
+**سامانه ردیابی نشت اطلاعات ایرانیان**
 
-## Service content
-This product provides inquiry and tracking services for individual leakage events in Iran (Republic Islamic of Iran).
-Informs users know whether they exist in the list of major security data breaches, and tries to increase their information security literacy.
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/Website-leakfa.com-blue.svg)](https://leakfa.com)
+[![Persian](https://img.shields.io/badge/Language-فارسی-red.svg)](#)
+[![Privacy](https://img.shields.io/badge/Privacy-Protected-blue?logo=lock)](https://leakfa.com/policy)
+[![Records](https://img.shields.io/badge/Records-100M+-orange)](https://leakfa.com/stat)
+[![Made in Iran](https://img.shields.io/badge/Made%20in-Iran-green)](https://github.com/Leakfarsi/Leakfa.com)
+[![GitHub Stars](https://img.shields.io/github/stars/Leakfarsi/Leakfa.com?style=social)](https://github.com/Leakfarsi/Leakfa.com)
 
-## Technical details
-To improve website security and increase users trust, the SHA-1 hash function is used to identify and return the information to the server, which can also prevent developers from secretly collecting users data.
+لیک‌فا (**Leakfa**) سرویسی رایگان و امن برای بررسی نشت داده‌های شخصی کاربران ایرانی است — مشابه سرویس معتبر [Have I Been Pwned](https://haveibeenpwned.com)، اما با تمرکز ویژه بر رخدادهای امنیتی مربوط به ایران 🇮🇷.
 
-## Service idea
-Given that a large number of data breaches incidents were reported in March and April 2020, and most organizations did not actively notify users of these personal information leakages, we tried to provide a method using one-way identification to help Iranians check whether their information has been leaked.
-<p>The main source is from <a href="https://github.com/breach-tw/breach.tw">breach.tw</a>, thanks to <a href="https://github.com/seadog007" title="seadog007">Li-Heng Yu</a>.</p>
+---
 
-## Follow us
-[Twitter](https://twitter.com/leakfarsi) - [YouTube](https://www.youtube.com/leakfarsi) - [Telegram](https://t.me/leakfarsi)
+## 📌 درباره پروژه
+
+### 💡 چرا لیک‌فا ایجاد شد؟
+لیک‌فا در واکنش به موج گسترده نشت اطلاعات در فروردین و خرداد ۱۳۹۹ ایجاد شد؛ زمانی که:
+- بسیاری از سازمان‌های بزرگ ایرانی هدف حملات سایبری قرار گرفتند
+- میلیون‌ها رکورد اطلاعات شخصی به بیرون درز کرد
+- اکثر سازمان‌ها کاربران خود را از این نشت‌ها مطلع نکردند
+- کاربران عادی راهی برای بررسی وضعیت امنیت اطلاعاتشان نداشتند
+
+### 🎯 اهداف پروژه
+- 🛡️ **افزایش آگاهی امنیتی**: کمک به کاربران برای درک وضعیت امنیت اطلاعاتشان
+- 🔍 **شفافیت اطلاعات**: فراهم کردن دسترسی آسان به اطلاعات نشت داده‌ها
+- 📚 **ارتقای سواد سایبری**: آموزش و ترویج بهترین شیوه‌های امنیتی
+- ⚖️ **مسئولیت‌پذیری**: ترغیب سازمان‌ها به حفاظت بهتر از داده‌های کاربران
+
+---
+
+## 🔐 نحوه عملکرد
+
+### 🔄 فرآیند امن جستجو
+1. **ورودی کاربر**: ایمیل یا شماره موبایل را وارد کنید
+2. **هش‌سازی محلی**: داده با الگوریتم SHA-1 در مرورگر شما هش می‌شود
+3. **انتقال امن**: فقط هش تولید شده (نه داده اصلی) به سرور ارسال می‌شود
+4. **جستجو**: سرور هش را با پایگاه داده نشت‌ها مقایسه می‌کند
+5. **نتیجه**: وضعیت امنیت اطلاعاتتان نمایش داده می‌شود
+
+### 📂 منابع داده
+- 📊 نشت‌های عمومی تأیید شده
+- 📧 گزارش‌های ناشناس از منابع معتبر
+- 🔍 پایش مستمر فضای سایبری ایران
+- ✅ تأیید و اعتبارسنجی تمام داده‌ها قبل از افزودن
+
+---
+
+## 🔒 حریم خصوصی و امنیت
+
+### 🛡️ تضمین‌های امنیتی
+- 🚫 **هیچ داده خامی ذخیره نمی‌شود**: فقط هش SHA-1 پردازش می‌شود
+- 🔐 **رمزنگاری پیشرفته**: تمام ارتباطات با HTTPS محفوظ است
+- 🕵️ **کاملاً ناشناس**: هویت جستجوکننده محفوظ می‌ماند
+- 📝 **حداقل لاگ**: فقط آمار کلی برای بهبود سرویس
+
+### 💾 اطلاعات ذخیره شده
+- ✅ هش SHA-1 جستجو شده
+- ✅ آدرس IP (برای امنیت و جلوگیری از سوءاستفاده)
+- ✅ زمان درخواست
+- ❌ هیچ داده شخصی خام
+
+---
+
+## 🚀 ویژگی‌ها
+- ⚡ **سرعت بالا**: جستجوی فوری در میلیون‌ها رکورد
+- 📱 **طراحی ریسپانسیو**: سازگار با تمام دستگاه‌ها
+- 🌐 **پشتیبانی کامل از فارسی**: رابط کاربری فارسی
+- 🔄 **به‌روزرسانی مستمر**: افزودن نشت‌های جدید
+- 📊 **آمار شفاف**: گزارش‌های دوره‌ای از وضعیت امنیت
+- 🛡️ **منبع باز**: کد قابل بررسی و تأیید
+
+---
+
+## 📱 ما را دنبال کنید
+- 🐦 [توییتر](https://twitter.com/leakfarsi) - آخرین اخبار و به‌روزرسانی‌ها
+- 📱 [تلگرام](https://t.me/leakfarsi) - کانال رسمی اطلاع‌رسانی
+- 🎥 [یوتیوب](https://www.youtube.com/leakfarsi) - آموزش‌های امنیت سایبری
+
+---
+
+## 📄 مجوز
+این پروژه تحت [لایسنس MIT](LICENSE) منتشر شده است که امکان استفاده، تغییر و توزیع آزاد را فراهم می‌کند.
+
+### 🙏 تقدیر و تشکر
+بخش‌هایی از کد اولیه این پروژه بر پایه [پروژه breach.tw](https://github.com/breach-tw/breach.tw) توسط [Li-Heng Yu](https://github.com/seadog007) توسعه یافته که تحت مجوز MIT منتشر شده است.
+
+📄 [View English Version / مشاهده نسخه انگلیسی](README_EN.md)
