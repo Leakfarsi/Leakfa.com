@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.3.3
+Version:        3.5.0
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -56,6 +56,13 @@ if (!checkPopupDisplayed()) {
    displayPopup();
 }
 
+// Turnstile widget
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof turnstile !== 'undefined') {
+        initTurnstileWidget();
+    }
+});
+
 const delay = s => {
     return new Promise(function (resolve, reject) {
         setTimeout(resolve, s);
@@ -90,6 +97,77 @@ function checkSearchLimit() {
     return false;
 }
 
+let turnstileWidget = null;
+let turnstileContainer = null;
+
+function initTurnstileWidget() {
+    if (turnstileWidget === null) {
+        turnstileContainer = document.createElement('div');
+        turnstileContainer.style.position = 'fixed';
+        turnstileContainer.style.top = '-1000px';
+        turnstileContainer.style.left = '-1000px';
+        turnstileContainer.style.visibility = 'hidden';
+        document.body.appendChild(turnstileContainer);
+        
+        turnstileWidget = turnstile.render(turnstileContainer, {
+            sitekey: TURNSTILE_SITE_KEY,
+            size: 'invisible',
+            callback: function(token) {
+                window.currentTurnstileToken = token;
+            },
+            'error-callback': function(error) {
+                console.error('Turnstile error:', error);
+                window.currentTurnstileToken = null;
+            },
+            'expired-callback': function() {
+                window.currentTurnstileToken = null;
+            }
+        });
+    }
+}
+
+function getTurnstileToken() {
+    return new Promise((resolve, reject) => {
+        if (turnstileWidget === null) {
+            initTurnstileWidget();
+        }
+        
+        if (window.currentTurnstileToken) {
+            const token = window.currentTurnstileToken;
+            window.currentTurnstileToken = null;
+            turnstile.reset(turnstileWidget);
+            resolve(token);
+            return;
+        }
+        
+        let attempts = 0;
+        const maxAttempts = 100; // 10 Sec wait
+        
+        const checkToken = setInterval(() => {
+            attempts++;
+            
+            if (window.currentTurnstileToken) {
+                clearInterval(checkToken);
+                const token = window.currentTurnstileToken;
+                window.currentTurnstileToken = null;
+                turnstile.reset(turnstileWidget);
+                resolve(token);
+            } else if (attempts >= maxAttempts) {
+                clearInterval(checkToken);
+                reject(new Error('Turnstile timeout'));
+            }
+        }, 100);
+        
+        if (!window.currentTurnstileToken) {
+            try {
+                turnstile.execute(turnstileWidget);
+            } catch (e) {
+                turnstile.reset(turnstileWidget);
+            }
+        }
+    });
+}
+
 async function search_by_core(hash, hashed = false) {
     if (checkSearchLimit()) {
         return;
@@ -97,80 +175,96 @@ async function search_by_core(hash, hashed = false) {
 
     incrementSearchCount();
 
-
-  $('#search').attr('disabled', true);
-  if (!hashed) {
-    $('#search')[0].blur();
-    $('#search').text('درحال کدگذاری...')[0];
-    showToast('درحال کدگذاری...');
-    await delay(700);
-    Swal.close();
-  }
-
-  showToast('درحال جستجو...');
-  $('#search').text('در حال جستجو...');
-
-  grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-    action: 'search'
-  }).then(function (token) {
-    let param = new URLSearchParams({
-      "mode": "recaptcha",
-      "hash": hash,
-      "token": token
-    });
-    fetch('/api/search.php?' + param.toString())
-      .then(res => res.json())
-      .then(async res => {
+    $('#search').attr('disabled', true);
+    if (!hashed) {
+        $('#search')[0].blur();
+        $('#search').text('درحال کدگذاری...')[0];
+        showToast('درحال کدگذاری...');
         await delay(700);
-        // Clear toast
         Swal.close();
-        $('#search').text('جستجو').removeAttr('disabled');
-        await delay(100);
-        // Populate search results
-        let searchResultsDiv = document.getElementById('searchResults');
-        if (res.status == 0) {
-          if (Object.size(res.result) > 0) {
-            let breach = [];
-            for (source in res.result) breach.push(source + ': ' + res.result[source].join('، '));
-            let iconHTML = '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" class="error-icon"><path fill="red" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>';
-            let footerLinks = '<div class="swal2-footer" style="display: flex;"><a href="/notify">باخبرم کن</a>｜<a href="/leaks">فهرست نشت های عمده</a>｜<a href="/faq#what-should-i-do-if-leaked">باید چکار کنم؟</a></div>';
-            let resultsHTML = `
-        <div class="search-results" style="text-align: center;">
-            <br>
-            ${iconHTML}
-            <h2 style="display: inline-block;">اوه نه، یه خبر بد</h2>
-            <p style="text-align: center;">ما نشتی از اطلاعات شما پیدا کردیم!</p>
-            <br>
-            <h3 style="text-align: right;">موارد افشا شده:</h3>
-            <ul>
-                ${breach.map(item => `<li style="text-align: justify;">${item}</li><br>`).join('')}
-            </ul>
-            ${footerLinks}
-            <br>
-        </div>`;
-            searchResultsDiv.innerHTML = resultsHTML;
-             searchResultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else {
-            let iconHTML = '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" class="success-icon"><path fill="green" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 9l-5 5-5-5 1.41-1.41L12 13.17l3.59-3.58L17 11z"/></svg></div>';
-            let footerLinks = '<div class="swal2-footer" style="display: flex;"><a href="/notify">وقتی نشتی پیدا شد باخبرم کن!</a></div>';
-            let resultsHTML = `
-        <div class="search-results" style="text-align: center;">
-            <br>
-            ${iconHTML}
-            <h2 style="display: inline-block;">یه خبر خوب!</h2>
-            <p style="text-align: center;">ما هیچ نشتی از اطلاعات شما پیدا نکردیم، اما ممکن است در آینده ای نزدیک اینطور نباشد!<br/>پس با دقت زیادی از داده های خود مراقبت کنید :)</p>
-            ${footerLinks}
-            <br>
-        </div>`;
-            searchResultsDiv.innerHTML = resultsHTML;
-             searchResultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+    }
 
-        } else {
-          showToast('خطای سرور: ' + res.error, 'error');
-        }
-      });
-  });
+    showToast('درحال بررسی امنیتی...');
+    $('#search').text('در حال بررسی امنیتی...');
+
+    try {
+        const token = await getTurnstileToken();
+        
+        showToast('درحال جستجو...');
+        $('#search').text('در حال جستجو...');
+        
+        let param = new URLSearchParams({
+            "mode": "turnstile",
+            "hash": hash,
+            "token": token
+        });
+        
+        fetch('/api/search.php?' + param.toString())
+            .then(res => res.json())
+            .then(async res => {
+                await delay(700);
+                Swal.close();
+                $('#search').text('جستجو').removeAttr('disabled');
+                await delay(100);
+                let searchResultsDiv = document.getElementById('searchResults');
+                if (res.status == 0) {
+                    if (Object.size(res.result) > 0) {
+                        let breach = [];
+                        for (source in res.result) breach.push(source + ': ' + res.result[source].join('، '));
+                        let iconHTML = '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" class="error-icon"><path fill="red" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>';
+                        let footerLinks = '<div class="swal2-footer" style="display: flex;"><a href="/notify">باخبرم کن</a>｜<a href="/leaks">فهرست نشت های عمده</a>｜<a href="/faq#what-should-i-do-if-leaked">باید چکار کنم؟</a></div>';
+                        let resultsHTML = `
+                <div class="search-results" style="text-align: center;">
+                    <br>
+                    ${iconHTML}
+                    <h2 style="display: inline-block;">اوه نه، یه خبر بد</h2>
+                    <p style="text-align: center;">ما نشتی از اطلاعات شما پیدا کردیم!</p>
+                    <br>
+                    <h3 style="text-align: right;">موارد افشا شده:</h3>
+                    <ul>
+                        ${breach.map(item => `<li style="text-align: justify;">${item}</li><br>`).join('')}
+                    </ul>
+                    ${footerLinks}
+                    <br>
+                </div>`;
+                        searchResultsDiv.innerHTML = resultsHTML;
+                        searchResultsDiv.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    } else {
+                        let iconHTML = '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80" height="80" class="success-icon"><path fill="green" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 9l-5 5-5-5 1.41-1.41L12 13.17l3.59-3.58L17 11z"/></svg></div>';
+                        let footerLinks = '<div class="swal2-footer" style="display: flex;"><a href="/notify">وقتی نشتی پیدا شد باخبرم کن!</a></div>';
+                        let resultsHTML = `
+                <div class="search-results" style="text-align: center;">
+                    <br>
+                    ${iconHTML}
+                    <h2 style="display: inline-block;">یه خبر خوب!</h2>
+                    <p style="text-align: center;">ما هیچ نشتی از اطلاعات شما پیدا نکردیم، اما ممکن است در آینده ای نزدیک اینطور نباشد!<br/>پس با دقت زیادی از داده های خود مراقبت کنید :)</p>
+                    ${footerLinks}
+                    <br>
+                </div>`;
+                        searchResultsDiv.innerHTML = resultsHTML;
+                        searchResultsDiv.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+
+                } else {
+                    showToast('خطای سرور: ' + res.error, 'error');
+                }
+            })
+            .catch(error => {
+                $('#search').text('جستجو').removeAttr('disabled');
+                Swal.close();
+                showToast('خطا در ارتباط با سرور', 'error');
+            });
+    } catch (error) {
+        $('#search').text('جستجو').removeAttr('disabled');
+        Swal.close();
+        showToast('خطا در تأیید امنیتی', 'error');
+    }
 }
 
 async function gen_sha1(form) {
@@ -194,27 +288,30 @@ async function search_by_hash(hash, hashed = false) {
 
     incrementSearchCount();
 
+    $('#search').attr('disabled', true);
+    if (!hashed) {
+        $('#search')[0].blur();
+        $('#search').text('درحال کدگذاری...')[0];
+        showToast('درحال کدگذاری...');
+        await delay(700);
+        Swal.close();
+    }
 
-  $('#search').attr('disabled', true);
-  if (!hashed) {
-    $('#search')[0].blur();
-    $('#search').text('درحال کدگذاری...')[0];
-    showToast('درحال کدگذاری...');
-    await delay(700);
-    Swal.close();
-  }
+    showToast('درحال بررسی امنیتی...');
+    $('#search').text('در حال بررسی امنیتی...');
 
-    showToast('درحال جستجو...');
-    $('#search').text('در حال جستجو...');
-
-    grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: 'search'
-    }).then(function (token) {
+    try {
+        const token = await getTurnstileToken();
+        
+        showToast('درحال جستجو...');
+        $('#search').text('در حال جستجو...');
+        
         let param = new URLSearchParams({
-            "mode": "recaptcha",
+            "mode": "turnstile",
             "hash": hash,
             "token": token
         });
+        
         fetch('/api/search.php?' + param.toString())
             .then(res => res.json())
             .then(async res => {
@@ -252,16 +349,28 @@ async function search_by_hash(hash, hashed = false) {
                         text: res.error
                     });
                 }
+            })
+            .catch(error => {
+                $('#search').text('جستجو').removeAttr('disabled');
+                Swal.close();
+                showToast('خطا در ارتباط با سرور', 'error');
             });
-    });
+    } catch (error) {
+        $('#search').text('جستجو').removeAttr('disabled');
+        Swal.close();
+        showToast('خطا در تأیید امنیتی', 'error');
+    }
 }
 
 function subscribe_func(form) {
     $('#subscribe').attr('disabled', true);
     let hash = sha1(form.subscribe_form_phone.value);
-    grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: 'subscribe'
-    }).then(function (token) {
+    
+    showToast('درحال بررسی امنیتی...');
+    
+    getTurnstileToken().then(function (token) {
+        showToast('درحال ثبت اشتراک...');
+        
         let param = new URLSearchParams({
             "hash": hash,
             "email": form.subscribe_form_email.value,
@@ -274,6 +383,7 @@ function subscribe_func(form) {
             })
             .then(function (res) {
                 $('#subscribe').removeAttr('disabled');
+                Swal.close();
                 if (res.status == 0) {
                     if (Object.size(res.result) > 0) {
                         Swal.fire({
@@ -298,15 +408,27 @@ function subscribe_func(form) {
                         text: res.error
                     });
                 }
+            })
+            .catch(error => {
+                $('#subscribe').removeAttr('disabled');
+                Swal.close();
+                showToast('خطا در ارتباط با سرور', 'error');
             });
+    }).catch(error => {
+        $('#subscribe').removeAttr('disabled');
+        Swal.close();
+        showToast('خطا در تأیید امنیتی', 'error');
     });
 }
 
 function subscription_status_func(form) {
     $('#query').attr('disabled', true);
-    grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: 'query_subscription_status'
-    }).then(function (token) {
+    
+    showToast('درحال بررسی امنیتی...');
+    
+    getTurnstileToken().then(function (token) {
+        showToast('درحال بررسی وضعیت...');
+        
         let param = new URLSearchParams({
             "email": form.email.value,
             "token": token
@@ -316,6 +438,7 @@ function subscription_status_func(form) {
                 return res.json();
             }).then(function (res) {
                 $('#query').removeAttr('disabled');
+                Swal.close();
                 if (res.status == 0) {
                     if (res.result == 'not_subscribed') {
                         $('.searchForm').hide();
@@ -341,16 +464,28 @@ function subscription_status_func(form) {
                         text: res.error
                     });
                 }
+            })
+            .catch(error => {
+                $('#query').removeAttr('disabled');
+                Swal.close();
+                showToast('خطا در ارتباط با سرور', 'error');
             });
+    }).catch(error => {
+        $('#query').removeAttr('disabled');
+        Swal.close();
+        showToast('خطا در تأیید امنیتی', 'error');
     });
 }
 
 function unsubscribe_func(form) {
     $('#unsubscribe').attr('disabled', true);
     let hash = sha1(form.unsubscribe_form_phone.value);
-    grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: 'unsubscribe'
-    }).then(function (token) {
+    
+    showToast('درحال بررسی امنیتی...');
+    
+    getTurnstileToken().then(function (token) {
+        showToast('درحال لغو اشتراک...');
+        
         let param = new URLSearchParams({
             "hash": hash,
             "email": form.unsubscribe_form_email.value,
@@ -361,6 +496,7 @@ function unsubscribe_func(form) {
                 return res.json();
             }).then(function (res) {
                 $('#unsubscribe').removeAttr('disabled');
+                Swal.close();
                 if (res.status == 0) {
                     Swal.fire({
                         type: 'success',
@@ -376,7 +512,16 @@ function unsubscribe_func(form) {
                         text: res.error
                     });
                 }
+            })
+            .catch(error => {
+                $('#unsubscribe').removeAttr('disabled');
+                Swal.close();
+                showToast('خطا در ارتباط با سرور', 'error');
             });
+    }).catch(error => {
+        $('#unsubscribe').removeAttr('disabled');
+        Swal.close();
+        showToast('خطا در تأیید امنیتی', 'error');
     });
 }
 
