@@ -10,7 +10,7 @@
 
     <div class="padded container">
         <h1 class="breach-title">هش ساز</h1> 
-        <p>این روش برای جلوگیری از ارسال مستقیم اطلاعات به سمت ما طراحی شده، پس از وارد کردن شماره تلفن‌همراه یا آدرس ایمیل هش تولید شده را جستجو کنید. روش ساخت هش بر اساس الگوریتم<span style="color: red;"> SHA-1</span> می باشد.<br/>اگر هنوز شک دارید، لطفاً از سرویس استفاده نکنید!</p>
+        <p>این روش برای حفظ امنیت و جلوگیری از ارسال مستقیم اطلاعات شما طراحی شده است. پس از وارد کردن شماره تلفن همراه یا آدرس ایمیل، هش تولید شده را جستجو کنید. هش بر اساس الگوریتم<span style="color: red;"> SHA-1</span> ساخته می‌شود.<br/>اگر هنوز در مورد امنیت این روش شک دارید، لطفاً از سرویس استفاده نکنید!</p>
         <form id="search_step_form">
             <div class="form-group ">
                 <label for="phone" >تلفن همراه یا آدرس ایمیل</label>
@@ -49,8 +49,7 @@
         </form>
     </div>
 
-    <script src="https://www.google.com/recaptcha/api.js?render=<?=RECAPTCHA_SITE_KEY?>"></script>
-    <script>const RECAPTCHA_SITE_KEY='<?= RECAPTCHA_SITE_KEY?>'</script>
+    <script>const TURNSTILE_SITE_KEY='<?= TURNSTILE_SITE_KEY?>'</script>
     <script src="/js/main.js"></script>
 
     <script>
@@ -67,4 +66,4 @@
         });
     </script>
 
-    <?php require 'src/footer.php'; ?>
+<?php require 'src/footer.php'; ?>
