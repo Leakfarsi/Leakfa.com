@@ -18,8 +18,8 @@ define('SMTP_SEME', 'tls');
 define('SMTP_EMAIL', 'noreplay@leakfa.com');
 define('SMTP_NICK', 'Leakfa');
 
-define('RECAPTCHA_SITE_KEY', '');
-define('RECAPTCHA_SECRET_KEY', '');
+define('TURNSTILE_SITE_KEY', ''); 
+define('TURNSTILE_SECRET_KEY', '');
 
 define('EMAIL_VERIFICATION_SUBJECT', 'Please verify your email address');
 define('EMAIL_VERIFICATION_CONTENT', 'Hi, §name§<br/><br/>Thanks for joining Leakfa. To finish subscription, please click the link below to verify your email address.<br/><a href="https://leakfa.com/verify.php?code=§code§">https://leakfa.com/verify.php?code=§code§</a><br/><br/>If a large-scale personal leak is discovered after subscription, you will be notified immediately.<br/>If you have any question, please contact us at: info@leakfa.com<br/><br/>Leakfa Team');
