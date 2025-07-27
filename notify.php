@@ -63,10 +63,7 @@
             <button class="btn btn-outline-primary btn-block" type="submit" id="subscribe">ثبت اشتراک</button>
         </form>
     </div>
-    <script src="https://www.google.com/recaptcha/api.js?render=<?= RECAPTCHA_SITE_KEY ?>"></script>
-    <script>
-        const RECAPTCHA_SITE_KEY = '<?= RECAPTCHA_SITE_KEY ?>'
-    </script>
+    <script>const TURNSTILE_SITE_KEY='<?= TURNSTILE_SITE_KEY?>'</script>
     <script src="/js/main.js"></script>
 
     <script>
