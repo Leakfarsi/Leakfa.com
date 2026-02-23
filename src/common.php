@@ -124,35 +124,36 @@ function search($hash){
     $res = [];
     $res['status'] = '0';
     $res['result'] = [];
-
     global $db;
-    $stmt = $db->prepare("SELECT `source` FROM `breach_log` WHERE `hash`=:hash");
-    $stmt->execute([
-        'hash' => $_GET['hash']
-    ]);
-
-    $sources = $stmt->fetchall(PDO::FETCH_ASSOC);
     
-    foreach($sources as $_ => $val){
-        $stmt = $db->prepare("SELECT `name` FROM `breach_source` WHERE `id`=:source_id");
-        $stmt->execute([
-            'source_id' => $val['source']
-        ]);
-        $source_info = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $stmt = $db->prepare("SELECT `name` FROM `source_item` INNER JOIN `breach_item` `s` on `s`.`id` = `source_item`.`item` WHERE `source`=:source_id");
-        $stmt->execute([
-            'source_id' => $val['source']
-        ]);
-        $items = $stmt->fetchall(PDO::FETCH_ASSOC);
-        $items = reduce_items($items);
-
-        $res['result'][$source_info['name']] = $items;
-        
+    $stmt = $db->prepare("SELECT id FROM breach_hash WHERE hash = UNHEX(?)");
+    $stmt->execute([$hash]);
+    $hashRow = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if(!$hashRow){
+        search_log($_GET['hash'], []);
+        return $res;
     }
-
-    search_log($_GET['hash'], $res['result']);
     
+    $stmt = $db->prepare("SELECT source_id FROM breach_relation WHERE hash_id = ?");
+    $stmt->execute([$hashRow['id']]);
+    $sources = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach($sources as $val){
+        $stmt = $db->prepare("SELECT name FROM breach_source WHERE id = ?");
+        $stmt->execute([$val['source_id']]);
+        $source_info = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $stmt = $db->prepare("SELECT name FROM source_item 
+                              INNER JOIN breach_item s ON s.id = source_item.item 
+                              WHERE source = ?");
+        $stmt->execute([$val['source_id']]);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = reduce_items($items);
+        $res['result'][$source_info['name']] = $items;
+    }
+    
+    search_log($_GET['hash'], $res['result']);
     return $res;
 }
 
@@ -278,7 +279,7 @@ function is_sha1($str) {
 
 function search_log($hash, $res){
     global $db;
-    $stmt = $db->prepare('INSERT INTO `search_log`(`hash`, `isbreach`, `ip`) VALUES (:hash, :isbreach, :ip)');
+    $stmt = $db->prepare('INSERT INTO `search_log`(`hash`, `isbreach`, `ip`) VALUES (UNHEX(:hash), :isbreach, :ip)');
     $stmt->execute([
         'hash' => $hash,
         'isbreach' => ($res != array() ? '1' : '0'),
@@ -319,45 +320,56 @@ function turnstile_verify($token){
     return $result;
 }
 
-
 function site_stat(){
+    global $db;
     $out = [];
 
-    global $db;
     $stmt = $db->prepare("SELECT * FROM `stat` ORDER BY `id` DESC LIMIT 1");
     $stmt->execute();
     $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $out['cache_gen_time'] = $res['time'];
     $out['unique_hash'] = intval($res['unique_hash']);
-    $out['total_pop'] = intval($res['total_pop']);
-    $out['cover_rate'] = $res['unique_hash'] / $res['total_pop'];
-    $out['total_pop_month'] = intval($res['total_pop_month']);
     $out['hit'] = intval($res['hit']);
     $out['no_hit'] = intval($res['no_hit']);
-    $out['total_unique_search'] = $res['hit'] + $res['no_hit'];
-    $out['hit_rate'] = $res['hit'] / $out['total_unique_search'];
 
-    $out['source'] = [];
+    $out['total_unique_search'] = $out['hit'] + $out['no_hit'];
+    $out['hit_rate'] = $out['total_unique_search'] > 0 
+        ? $out['hit'] / $out['total_unique_search'] 
+        : 0;
 
-    $stmt = $db->prepare("SELECT type, count(*) as `count` FROM `breach_source` WHERE major=1 GROUP BY `type`");
+    $stmt = $db->prepare("SELECT COUNT(*) FROM breach_source WHERE major=1");
     $stmt->execute();
-    $res = $stmt->fetchall(PDO::FETCH_ASSOC);
-    $out['source']['major'] = $res;
+    $out['major'] = intval($stmt->fetchColumn());
 
-    $stmt = $db->prepare("SELECT type, count(*) as `count` FROM `breach_source` WHERE major=0 GROUP BY `type`");
+    $stmt = $db->prepare("SELECT COUNT(*) FROM breach_source WHERE major=0");
     $stmt->execute();
-    $res = $stmt->fetchall(PDO::FETCH_ASSOC);
-    $out['source']['minor'] = $res;
+    $out['minor'] = intval($stmt->fetchColumn());
 
-    $stmt = $db->prepare("SELECT type, count(*) as `count` FROM `breach_source` GROUP BY `type`");
+    $out['total_sources'] = $out['major'] + $out['minor'];
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM breach_relation");
     $stmt->execute();
-    $res = $stmt->fetchall(PDO::FETCH_ASSOC);
-    $out['source']['total'] = $res;
+    $out['relations'] = intval($stmt->fetchColumn());
 
-    foreach($out['source'] as $key1 => $val1){
-        foreach($out['source'][$key1] as $key2 => $val2){
-            $out['source'][$key1][$key2]['count'] = intval($out['source'][$key1][$key2]['count']);
-        }
+    $stmt = $db->prepare("
+        SELECT 
+            sc.name AS category,
+            SUM(CASE WHEN bs.major = 1 THEN 1 ELSE 0 END) AS major_count,
+            SUM(CASE WHEN bs.major = 0 THEN 1 ELSE 0 END) AS minor_count,
+            COUNT(bs.id) AS total_count
+        FROM source_category sc
+        LEFT JOIN breach_source bs ON bs.category_id = sc.id
+        GROUP BY sc.id, sc.name
+        ORDER BY total_count DESC
+    ");
+    $stmt->execute();
+    $out['categories'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($out['categories'] as &$row){
+        $row['major_count'] = intval($row['major_count']);
+        $row['minor_count'] = intval($row['minor_count']);
+        $row['total_count'] = intval($row['total_count']);
     }
 
     return $out;
