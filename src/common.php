@@ -348,9 +348,7 @@ function site_stat(){
 
     $out['total_sources'] = $out['major'] + $out['minor'];
 
-    $stmt = $db->prepare("SELECT COUNT(*) FROM breach_relation");
-    $stmt->execute();
-    $out['relations'] = intval($stmt->fetchColumn());
+    $out['relations'] = intval($res['relations']);
 
     $stmt = $db->prepare("
         SELECT 
