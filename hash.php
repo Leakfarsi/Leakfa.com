@@ -19,7 +19,6 @@
                     class="form-control" 
                     id="phone" 
                     maxlength="255"  
-                    placeholder="E.g. 09123456789" 
                     style="text-transform:lowercase"
                     placeholder="E.g. 09123456789"  
                     autocomplete="off" 
