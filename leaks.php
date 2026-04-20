@@ -1,4 +1,4 @@
-<?php $title = 'فهرست نشت‌ها';
+<?php $title = 'نشت‌های عمده';
 	require 'src/header.php';
 	require 'src/common.php';
 	$majorBreaches = get_major_breaches();
@@ -46,6 +46,7 @@
 			</div>
 		</div>
 
+		<!-- Search & Filter Controls -->
 		<div class="leaks-controls">
 			<div class="leaks-search-wrap">
 				<svg class="leaks-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -75,6 +76,7 @@
 			</div>
 		</div>
 
+		<!-- Tag Filter Chips (collapsible on mobile) -->
 		<?php if ($allTags) { ?>
 			<div class="tag-filter-chips" id="tagFilterChips">
 				<?php foreach ($allTags as $tag) { ?>
@@ -89,7 +91,7 @@
 			</div>
 		<?php } ?>
 
-		<div class="breaches" id="breachesGrid">
+		<div class="breaches" id="breachesGrid" data-tag-details="<?= htmlspecialchars(json_encode($allTags), ENT_QUOTES, 'UTF-8') ?>">
 			<?php foreach ($majorBreaches as $idx => $val) {
 				$magnitudePercent = ($maxRoundK > 0) ? round(($val['round_k'] / $maxRoundK) * 100) : 0;
 				$severityClass = $magnitudePercent >= 70 ? 'severity-high' : ($magnitudePercent >= 35 ? 'severity-medium' : 'severity-low');
@@ -154,160 +156,6 @@
 		</div>
 	</div>
 
-<script>
-    const tag_details = <?= json_encode($allTags) ?>;
-	let activeTagFilter = null;
-
-    // Click event for tag info buttons (inside cards)
-    $(`[data-tag-id]`).click(function() {
-        let tagId = $(this).attr(`data-tag-id`);
-        let tag_detail = tag_details.filter(x => x.id == tagId)[0];
-        Swal.fire({
-            type: 'info',
-            title: `${tag_detail.name}`,
-            text: tag_detail.description,
-            confirmButtonText: 'باشه!'
-        });
-    });
-
-    // Modern clipboard API for copy link buttons
-    $(`.copy-link-btn`).click(function(e) {
-		e.stopPropagation();
-        var anchorLink = $(this).attr('data-anchor');
-        var url = window.location.origin + window.location.pathname + "#" + anchorLink;
-
-		if (navigator.clipboard && navigator.clipboard.writeText) {
-			navigator.clipboard.writeText(url).then(function() {
-				Swal.fire({
-					type: 'success',
-					title: 'آدرس کپی شد!',
-					text: 'آدرس روایت این نشت در کلیپ‌بورد شما کپی شد.',
-					confirmButtonText: 'باشه!'
-				});
-			});
-		} else {
-			// Fallback for older browsers
-			var tempInput = document.createElement("input");
-			tempInput.value = url;
-			document.body.appendChild(tempInput);
-			tempInput.select();
-			document.execCommand('copy');
-			document.body.removeChild(tempInput);
-			Swal.fire({
-				type: 'success',
-				title: 'آدرس کپی شد!',
-				text: 'آدرس روایت این نشت در کلیپ‌بورد شما کپی شد.',
-				confirmButtonText: 'باشه!'
-			});
-		}
-    });
-
-	// Also keep title click for copy (backward compat)
-    $(`.title`).click(function() {
-		$(this).closest('.title-wrap').find('.copy-link-btn').trigger('click');
-    });
-
-	// Disclaimer accordion toggle
-	$('#disclaimerToggle').on('click keypress', function(e) {
-		if (e.type === 'keypress' && e.which !== 13 && e.which !== 32) return;
-		e.preventDefault();
-		var body = $('#disclaimerBody');
-		var isOpen = body.hasClass('open');
-		body.toggleClass('open');
-		$(this).attr('aria-expanded', !isOpen);
-		$(this).find('.disclaimer-chevron').toggleClass('rotated');
-	});
-
-	// Search functionality
-	$('#breachSearch').on('input', function() {
-		filterBreaches();
-	});
-
-	// Sort functionality
-	$('#breachSort').on('change', function() {
-		var sortBy = $(this).val();
-		var grid = $('#breachesGrid');
-		var cards = grid.children('.breach').detach().toArray();
-
-		cards.sort(function(a, b) {
-			if (sortBy === 'magnitude') {
-				return parseFloat($(b).data('magnitude')) - parseFloat($(a).data('magnitude'));
-			} else {
-				return $(a).data('name').localeCompare($(b).data('name'), 'fa');
-			}
-		});
-
-		$.each(cards, function(i, card) {
-			grid.append(card);
-		});
-	});
-
-	// Tag filter chips
-	$('.tag-chip[data-filter-tag]').on('click', function() {
-		var tagId = $(this).data('filter-tag');
-
-		if (activeTagFilter == tagId) {
-			// Deselect
-			activeTagFilter = null;
-			$(this).removeClass('active');
-			$('#clearTagFilter').hide();
-		} else {
-			activeTagFilter = tagId;
-			$('.tag-chip[data-filter-tag]').removeClass('active');
-			$(this).addClass('active');
-			$('#clearTagFilter').show();
-		}
-		updateTagBadge();
-		filterBreaches();
-	});
-
-	$('#clearTagFilter').on('click', function() {
-		activeTagFilter = null;
-		$('.tag-chip[data-filter-tag]').removeClass('active');
-		$(this).hide();
-		$('#tagActiveCount').hide();
-		$('#tagToggleBtn').removeClass('has-filter');
-		filterBreaches();
-	});
-
-	// Tag toggle button (mobile: show/hide chips)
-	$('#tagToggleBtn').on('click', function() {
-		$('#tagFilterChips').toggleClass('chips-visible');
-		$(this).toggleClass('active');
-	});
-
-	// Update active count badge
-	function updateTagBadge() {
-		if (activeTagFilter) {
-			$('#tagActiveCount').text('۱').show();
-			$('#tagToggleBtn').addClass('has-filter');
-		} else {
-			$('#tagActiveCount').hide();
-			$('#tagToggleBtn').removeClass('has-filter');
-		}
-	}
-
-	function filterBreaches() {
-		var searchTerm = $('#breachSearch').val().toLowerCase().trim();
-		var visibleCount = 0;
-
-		$('#breachesGrid .breach').each(function() {
-			var name = $(this).data('name').toLowerCase();
-			var tags = String($(this).data('tags'));
-			var matchSearch = !searchTerm || name.indexOf(searchTerm) !== -1;
-			var matchTag = !activeTagFilter || tags.split(',').indexOf(String(activeTagFilter)) !== -1;
-
-			if (matchSearch && matchTag) {
-				$(this).removeClass('breach-hidden');
-				visibleCount++;
-			} else {
-				$(this).addClass('breach-hidden');
-			}
-		});
-
-		$('#noResults').toggle(visibleCount === 0);
-	}
-
-</script>
+<script src="/js/leaks.js"></script>
 
 <?php require 'src/footer.php'; ?>
