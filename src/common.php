@@ -179,7 +179,7 @@ function subscribe($name, $email, $hash){
             if($account['name']){
                 $res['error'] = 'این ایمیل در باخبرم کن قبلا ثبت شده است، یک نامه آزمایشی برای شما ارسال می‌شود.';
                 $content = str_replace("§name§", $name, $content);
-                simple_email($email, $name, EMAIL_TEST_SUBJECT, $content, $code);
+                simple_email($email, $name, EMAIL_TEST_SUBJECT, $content, '');
             }else{
                 $res['error'] = 'شماره وارد شده با داده های اصلی مطابقت ندارد';
             }
