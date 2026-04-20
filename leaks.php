@@ -1,4 +1,4 @@
-<?php $title = 'نشت‌های عمده';
+<?php $title = 'فهرست نشت‌ها';
 	require 'src/header.php';
 	require 'src/common.php';
 	$majorBreaches = get_major_breaches();
