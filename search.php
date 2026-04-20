@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <p class="search-alt-link">هنوز نگران هستید؟ <a href="hash">از جستجوی جداگانه استفاده کنید.</a></p>
+        <p class="search-alt-link">هنوز نگران هستید؟ <a href="hash.php">از جستجوی جداگانه استفاده کنید.</a></p>
 
         <div id="searchResults"></div>
     </div>
