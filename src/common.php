@@ -2,7 +2,7 @@
 require_once 'config.php';
 
 function get_ip(){
-    return $_SERVER['HTTP_CF_CONNECTING_IP'] ?: $_SERVER['REMOTE_ADDR'];
+    return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'];
 }
 
 function get_breach_type_count($major){
