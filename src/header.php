@@ -21,6 +21,7 @@ require 'config.php';
       	<!-- JavaScript -->
         <script src="https://cdn.jsdelivr.net/gh/emn178/js-sha1/build/sha1.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
         <script>
         function onTurnstileLoad() {
@@ -51,28 +52,28 @@ require 'config.php';
                 <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                         <?php $uri = $_SERVER['REQUEST_URI']; ?>
-                        <li class="nav-item <?= $uri == '/search.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="search.php">جستجوی نشت</a>
+                        <li class="nav-item <?= $uri == '/search' ? 'active' : '' ?>">
+                            <a class="nav-link" href="search">جستجوی نشت</a>
                         </li>
-                        <li class="nav-item <?= $uri == '/leaks.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="leaks.php">نشت‌های عمده</a>
+                        <li class="nav-item <?= $uri == '/leaks' ? 'active' : '' ?>">
+                            <a class="nav-link" href="leaks">فهرست نشت‌ها</a>
                         </li>
-			            <li class="nav-item <?= $uri == '/notify.php' ? 'active' : '' ?>">
-				            <a class="nav-link" href="notify.php">باخبرم کن</a>
+			            <li class="nav-item <?= $uri == '/notify' ? 'active' : '' ?>">
+				            <a class="nav-link" href="notify">باخبرم کن</a>
 			            </li>
-                        <li class="nav-item <?= $uri == '/donate.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="donate.php">حمایت مالی</a>
+                        <li class="nav-item <?= $uri == '/donate' ? 'active' : '' ?>">
+                            <a class="nav-link" href="donate">حمایت مالی</a>
                         </li>
-                        <li class="nav-item <?= $uri == '/faq.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="faq.php">سوالات متداول</a>
+                        <li class="nav-item <?= $uri == '/faq' ? 'active' : '' ?>">
+                            <a class="nav-link" href="faq">سوالات متداول</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">سایر</a>
                             <div class="dropdown-menu">
-							    <a class="dropdown-item <?= $uri == '/policy.php' ? 'active' : '' ?>" href="policy.php">خط مشی</a>
-                                <a class="dropdown-item <?= $uri == '/about.php' ? 'active' : '' ?>" href="about.php">درباره ما</a>
+							    <a class="dropdown-item <?= $uri == '/policy' ? 'active' : '' ?>" href="policy">خط مشی</a>
+                                <a class="dropdown-item <?= $uri == '/about' ? 'active' : '' ?>" href="about">درباره ما</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item <?= $uri == '/stat.php' ? 'active' : '' ?>" href="stat.php">آمار ها</a>
+                                <a class="dropdown-item <?= $uri == '/stat' ? 'active' : '' ?>" href="stat">آمار ها</a>
                             </div>
                         </li>
                     </ul>
@@ -106,5 +107,3 @@ require 'config.php';
                 </div>
             </div>
         </nav>
-    </body>
-</html>
