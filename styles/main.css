@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.0.0
+Version:        3.1.0
 */
 
 @font-face {
@@ -259,7 +259,7 @@ p + h3.breach-title {
 
 .leaks-search {
     width: 100%;
-    padding: 10px 42px 10px 14px;
+    padding: 10px 42px 10px 36px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-family: Vazir;
@@ -274,6 +274,31 @@ p + h3.breach-title {
     border-color: var(--theme-color);
     box-shadow: 0 0 0 3px rgba(63, 97, 123, 0.15);
     background: #fff;
+}
+
+.leaks-search-clear {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s ease;
+}
+
+.leaks-search-clear:hover {
+    color: #555;
+}
+
+.leaks-search-clear.visible {
+    display: inline-flex !important;
 }
 
 .leaks-compact-actions {
@@ -395,9 +420,9 @@ p + h3.breach-title {
     align-items: center;
     gap: 4px;
     padding: 5px 14px;
-    border: 1.5px solid #d0d0d0;
+    border: 1.5px solid transparent;
     border-radius: 20px;
-    background: #f5f5f5;
+    background: rgba(108, 117, 125, 0.12);
     font-family: Vazir;
     font-size: 0.82rem;
     color: #555;
@@ -405,16 +430,101 @@ p + h3.breach-title {
     transition: all 0.2s ease;
 }
 
-.tag-chip:hover {
-    border-color: var(--theme-color);
-    color: var(--theme-color);
-    background: rgba(63, 97, 123, 0.06);
+/* Tag chip colors matching Bootstrap tag classes */
+.tag-chip.btn-danger {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.25);
+}
+.tag-chip.btn-danger:hover,
+.tag-chip.btn-danger.active {
+    background: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
 }
 
-.tag-chip.active {
-    background: var(--theme-color);
+.tag-chip.btn-warning {
+    background: rgba(255, 193, 7, 0.12);
+    color: #b38600;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+.tag-chip.btn-warning:hover,
+.tag-chip.btn-warning.active {
+    background: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.tag-chip.btn-info {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+    border-color: rgba(23, 162, 184, 0.25);
+}
+.tag-chip.btn-info:hover,
+.tag-chip.btn-info.active {
+    background: #17a2b8;
     color: #fff;
-    border-color: var(--theme-color);
+    border-color: #17a2b8;
+}
+
+.tag-chip.btn-success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border-color: rgba(40, 167, 69, 0.25);
+}
+.tag-chip.btn-success:hover,
+.tag-chip.btn-success.active {
+    background: #28a745;
+    color: #fff;
+    border-color: #28a745;
+}
+
+.tag-chip.btn-primary {
+    background: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border-color: rgba(0, 123, 255, 0.25);
+}
+.tag-chip.btn-primary:hover,
+.tag-chip.btn-primary.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+.tag-chip.btn-secondary {
+    background: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border-color: rgba(108, 117, 125, 0.25);
+}
+.tag-chip.btn-secondary:hover,
+.tag-chip.btn-secondary.active {
+    background: #6c757d;
+    color: #fff;
+    border-color: #6c757d;
+}
+
+.tag-chip.btn-dark {
+    background: rgba(52, 58, 64, 0.1);
+    color: #343a40;
+    border-color: rgba(52, 58, 64, 0.25);
+}
+.tag-chip.btn-dark:hover,
+.tag-chip.btn-dark.active {
+    background: #343a40;
+    color: #fff;
+    border-color: #343a40;
+}
+
+.tag-chip.btn-light {
+    background: rgba(248, 249, 250, 0.5);
+    color: #555;
+    border-color: #d0d0d0;
+}
+.tag-chip.btn-light:hover,
+.tag-chip.btn-light.active {
+    background: #e2e6ea;
+    color: #212529;
+    border-color: #dae0e5;
 }
 
 .tag-chip-clear {
@@ -691,6 +801,34 @@ p + h3.breach-title {
     font-size: 1rem;
     opacity: 0.8;
     font-weight: 400;
+}
+
+/* Breach Metadata */
+.breach-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 0.5rem;
+}
+
+.breach-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.breach-meta-item svg {
+    flex-shrink: 0;
+}
+
+.breach-meta-item a {
+    color: #64adff;
+    text-decoration: none;
+}
+
+.breach-meta-item a:hover {
+    text-decoration: underline;
 }
 
 /* Search Page */
