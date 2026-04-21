@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        1.0.0
+Version:        1.1.0
 */
 
 $(document).ready(function () {
@@ -79,7 +79,13 @@ $(document).ready(function () {
 
     // Search functionality
     $('#breachSearch').on('input', function () {
+        $('#searchClear').toggleClass('visible', $(this).val().length > 0);
         filterBreaches();
+    });
+
+    // Clear search
+    $('#searchClear').on('click', function () {
+        $('#breachSearch').val('').trigger('input').focus();
     });
 
     // Sort functionality
