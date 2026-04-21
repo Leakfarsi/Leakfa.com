@@ -4,6 +4,10 @@
 	$majorBreaches = get_major_breaches();
 	$maxRoundK = max(array_column($majorBreaches, 'round_k'));
 	$allTags = get_tag_details();
+	$majorCount = get_breach_type_count(1);
+	$minorCount = get_breach_type_count(0);
+	$allBreachTags = get_all_breach_tags();
+	$allBreachItems = get_all_breach_items();
 	?>
 
 	<header class="jumbotron jumbotron-fluid">
@@ -11,15 +15,15 @@
 			<h1><?= $title ?></h1>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number"><?= get_breach_type_count(1) ?></div>
+                    <div class="stat-number"><?= $majorCount ?></div>
                     <div class="stat-label">نشت عمده</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number"><?= get_breach_type_count(0) ?></div>
+                    <div class="stat-number"><?= $minorCount ?></div>
                     <div class="stat-label">نشت جزئی</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number"><?= get_breach_type_count(0) + get_breach_type_count(1) ?></div>
+                    <div class="stat-number"><?= $majorCount + $minorCount ?></div>
                     <div class="stat-label">کل نشت‌ها</div>
                 </div>
             </div>
@@ -53,6 +57,9 @@
 					<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
 				</svg>
 				<input type="text" id="breachSearch" class="leaks-search" placeholder="جستجوی نشت‌ها..." aria-label="جستجوی نشت‌ها">
+				<button class="leaks-search-clear" id="searchClear" type="button" aria-label="پاک کردن جستجو">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+				</button>
 			</div>
 			<div class="leaks-compact-actions">
 				<div class="leaks-sort-wrap">
@@ -80,8 +87,8 @@
 		<?php if ($allTags) { ?>
 			<div class="tag-filter-chips" id="tagFilterChips">
 				<?php foreach ($allTags as $tag) { ?>
-					<button class="tag-chip" data-filter-tag="<?= $tag['id'] ?>" title="<?= htmlspecialchars($tag['description']) ?>">
-						<?= $tag['name'] ?>
+					<button class="tag-chip <?= htmlspecialchars($tag['class'], ENT_QUOTES, 'UTF-8') ?>" data-filter-tag="<?= $tag['id'] ?>" title="<?= htmlspecialchars($tag['description']) ?>">
+						<?= htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8') ?>
 					</button>
 				<?php } ?>
 				<button class="tag-chip tag-chip-clear" id="clearTagFilter" style="display:none;">
@@ -95,14 +102,15 @@
 			<?php foreach ($majorBreaches as $idx => $val) {
 				$magnitudePercent = ($maxRoundK > 0) ? round(($val['round_k'] / $maxRoundK) * 100) : 0;
 				$severityClass = $magnitudePercent >= 70 ? 'severity-high' : ($magnitudePercent >= 35 ? 'severity-medium' : 'severity-low');
-				$tags = get_tags($val['id']);
+				$tags = isset($allBreachTags[$val['id']]) ? $allBreachTags[$val['id']] : [];
 				$tagIds = $tags ? implode(',', array_column($tags, 'tag')) : '';
+				$leakedItems = isset($allBreachItems[$val['id']]) ? $allBreachItems[$val['id']] : [];
 			?>
-				<div class="breach" data-name="<?= htmlspecialchars($val['name']) ?>" data-magnitude="<?= $val['round_k'] ?>" data-tags="<?= $tagIds ?>">
+				<div class="breach" data-name="<?= htmlspecialchars($val['name'], ENT_QUOTES, 'UTF-8') ?>" data-magnitude="<?= (int)$val['round_k'] ?>" data-tags="<?= htmlspecialchars($tagIds, ENT_QUOTES, 'UTF-8') ?>">
 					<div class="header">
 						<div class="title-wrap">
-                    		<div class="title" id="<?= $val['anchor'] ?>" data-clipboard-text="<?= $val['anchor'] ?>"><?= $val['name'] ?></div>
-							<button class="copy-link-btn" data-anchor="<?= $val['anchor'] ?>" aria-label="کپی لینک نشت" title="کپی لینک نشت">
+                    	<div class="title" id="<?= htmlspecialchars($val['anchor'], ENT_QUOTES, 'UTF-8') ?>" data-clipboard-text="<?= htmlspecialchars($val['anchor'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($val['name'], ENT_QUOTES, 'UTF-8') ?></div>
+							<button class="copy-link-btn" data-anchor="<?= htmlspecialchars($val['anchor'], ENT_QUOTES, 'UTF-8') ?>" aria-label="کپی لینک نشت" title="کپی لینک نشت">
 								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 									<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
 									<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
@@ -120,7 +128,7 @@
 					<?php if ($tags) { ?>
 						<div class="tags">
 							<?php foreach ($tags as $tag) { ?>
-								<button data-tag-id="<?= $tag['tag'] ?>" class="btn btn-sm <?= $tag['class'] ?>" aria-label="برچسب: <?= htmlspecialchars($tag['name']) ?>" title="برای اطلاعات بیشتر کلیک کنید"><?= $tag['name'] ?></button>
+								<button data-tag-id="<?= (int)$tag['tag'] ?>" class="btn btn-sm <?= htmlspecialchars($tag['class'], ENT_QUOTES, 'UTF-8') ?>" aria-label="برچسب: <?= htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8') ?>" title="برای اطلاعات بیشتر کلیک کنید"><?= htmlspecialchars($tag['name'], ENT_QUOTES, 'UTF-8') ?></button>
 							<?php } ?>
 						</div>
 					<?php } ?>
@@ -135,7 +143,7 @@
 							</svg>
 							موارد افشا شده
 						</h4>
-						<p><?= join('، ', get_leaked_items($val['id'])) ?></p>
+						<p><?= join('، ', array_map(function($item) { return htmlspecialchars($item, ENT_QUOTES, 'UTF-8'); }, $leakedItems)) ?></p>
 						<h4>
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="روایت">
 								<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -143,7 +151,35 @@
 							</svg>
 							روایت
 						</h4>
-						<p><?= $val['description'] ?></p>
+						<p><?= htmlspecialchars($val['description'], ENT_QUOTES, 'UTF-8') ?></p>
+						<?php if ($val['breach_date'] || $val['time'] || $val['affected_accounts'] || $val['news_url'] || $val['video_url']) { ?>
+						<div class="breach-meta">
+							<?php if ($val['breach_date'] || $val['time']) { ?>
+							<div class="breach-meta-item">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+								<span>تاریخ نشت: <?= htmlspecialchars($val['breach_date'] ?: $val['time'], ENT_QUOTES, 'UTF-8') ?></span>
+							</div>
+							<?php } ?>
+							<?php if ($val['affected_accounts']) { ?>
+							<div class="breach-meta-item">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+								<span>حساب‌های تحت تاثیر: <?= number_format($val['affected_accounts']) ?></span>
+							</div>
+							<?php } ?>
+							<?php if ($val['news_url']) { ?>
+							<div class="breach-meta-item">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+								<a href="<?= htmlspecialchars($val['news_url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['news_title'] ?: 'گزارش خبری', ENT_QUOTES, 'UTF-8') ?></a>
+							</div>
+							<?php } ?>
+							<?php if ($val['video_url']) { ?>
+							<div class="breach-meta-item">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+								<a href="<?= htmlspecialchars($val['video_url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['video_title'] ?: 'ویدئو بررسی', ENT_QUOTES, 'UTF-8') ?></a>
+							</div>
+							<?php } ?>
+						</div>
+						<?php } ?>
 					</div>
 				</div>
 			<?php } ?>
