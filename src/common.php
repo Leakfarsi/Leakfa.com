@@ -17,7 +17,7 @@ function get_breach_type_count($major){
 
 function get_major_breaches(){
     global $db;
-    $stmt = $db->prepare("SELECT `id`,`name`,`anchor`,`description`,`round_k` FROM `breach_source` WHERE `major`=1 ORDER BY `round_k` DESC");
+    $stmt = $db->prepare("SELECT `id`,`name`,`anchor`,`description`,`round_k`,`time`,`breach_date`,`affected_accounts`,`news_url`,`news_title`,`video_url`,`video_title` FROM `breach_source` WHERE `major`=1 ORDER BY `round_k` DESC");
 	$stmt->execute();
     $res = $stmt->fetchall(PDO::FETCH_ASSOC);
     return $res;
@@ -25,7 +25,7 @@ function get_major_breaches(){
 
 function get_tag_details(){
     global $db;
-    $stmt = $db->prepare("SELECT `id`,`name`,`description` FROM `tag`");
+    $stmt = $db->prepare("SELECT `id`,`name`,`description`,`class` FROM `tag`");
 	$stmt->execute();
     $res = $stmt->fetchall(PDO::FETCH_ASSOC);
     return $res;
@@ -50,6 +50,42 @@ function get_tags($source){
     ]);
     $tags = $stmt->fetchall(PDO::FETCH_ASSOC);
     return $tags;
+}
+
+function get_all_breach_tags(){
+    global $db;
+    $stmt = $db->prepare("SELECT `source_tag`.`source`,`source_tag`.`tag`,`s`.`name`,`s`.`class` FROM `source_tag` INNER JOIN `tag` `s` on `s`.`id` = `source_tag`.`tag`");
+    $stmt->execute();
+    $rows = $stmt->fetchall(PDO::FETCH_ASSOC);
+    $grouped = [];
+    foreach ($rows as $row) {
+        $sourceId = $row['source'];
+        if (!isset($grouped[$sourceId])) {
+            $grouped[$sourceId] = [];
+        }
+        $grouped[$sourceId][] = [
+            'tag' => $row['tag'],
+            'name' => $row['name'],
+            'class' => $row['class']
+        ];
+    }
+    return $grouped;
+}
+
+function get_all_breach_items(){
+    global $db;
+    $stmt = $db->prepare("SELECT `source_item`.`source`,`breach_item`.`name` FROM `source_item` INNER JOIN `breach_item` on `breach_item`.`id` = `source_item`.`item`");
+    $stmt->execute();
+    $rows = $stmt->fetchall(PDO::FETCH_ASSOC);
+    $grouped = [];
+    foreach ($rows as $row) {
+        $sourceId = $row['source'];
+        if (!isset($grouped[$sourceId])) {
+            $grouped[$sourceId] = [];
+        }
+        $grouped[$sourceId][] = $row['name'];
+    }
+    return $grouped;
 }
 
 use PHPMailer\PHPMailer\PHPMailer;
