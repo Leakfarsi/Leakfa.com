@@ -1,13 +1,13 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'leakfa');
-define('DB_USER', 'leakfa');
-define('DB_PASS', 'leakfa');
+define('DB_NAME', 'database');
+define('DB_USER', 'username');
+define('DB_PASS', 'password');
 define('DB_TIMEZONE', 'Asia/Tehran');
 define('DB2_HOST', 'localhost');
-define('DB2_NAME', 'leakfa');
-define('DB2_USER', 'leakfa');
-define('DB2_PASS', 'leakfa');
+define('DB2_NAME', 'database');
+define('DB2_USER', 'username');
+define('DB2_PASS', 'password');
 define('DB2_TIMEZONE', 'Asia/Tehran');
 
 define('SMTP_HOST', 'smtp.mail.com');
@@ -15,7 +15,7 @@ define('SMTP_PORT', 587);
 define('SMTP_USER', 'username');
 define('SMTP_PASS', 'password');
 define('SMTP_SEME', 'tls');
-define('SMTP_EMAIL', 'noreplay@leakfa.com');
+define('SMTP_EMAIL', 'noreply@leakfa.com');
 define('SMTP_NICK', 'Leakfa');
 
 define('TURNSTILE_SITE_KEY', ''); 
