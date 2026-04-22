@@ -82,6 +82,7 @@
 </div>
 
 <script>const TURNSTILE_SITE_KEY='<?= TURNSTILE_SITE_KEY?>'</script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="/js/main.js"></script>
 
 <script>
