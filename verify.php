@@ -11,7 +11,12 @@
 
     <div class="container" style="max-width: 600px;margin: 10px auto;">
         <?php
-            $status = verify_code($_GET['code']);
+            $code = isset($_GET['code']) ? $_GET['code'] : '';
+            if (!preg_match('/^[0-9a-f]{40}$/i', $code)) {
+                $status = -1;
+            } else {
+                $status = verify_code($code);
+            }
             if($status == 1){
         ?>
         <div class="card text-center">
@@ -44,5 +49,4 @@
         ?>
     </div>
 
-<?php require 'src/footer.php'; ?>
-
+    <?php require 'src/footer.php'; ?>
