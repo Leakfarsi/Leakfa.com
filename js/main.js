@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.1.0
+Version:        4.2.0
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -44,7 +44,7 @@ function checkPopupDisplayed() {
 function displayPopup() {
     setCookie("popupDisplayed", "true", 30); // Expire in 30 days
     Swal.fire({
-       type: 'info',
+       icon: 'info',
        title: 'نکته مهم:',
        confirmButtonText: "باشه", 
        width:'90%',
@@ -212,7 +212,7 @@ async function captureResult(action) {
                         });
                         return;
                     } catch (e) {
-                        if (e.name === 'AbortError') return;
+                        if (e.name === 'AbortError') return; // User cancelled
                     }
                 }
                 
@@ -522,7 +522,7 @@ async function search_by_hash(hash, hashed = false) {
                         breach.push(escapeHtml(source) + ': ' + res.result[source].map(escapeHtml).join('، '));
                     });
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'اوه نه، یه خبر بد',
                         confirmButtonText: "باشه",
                         html: `ما نشتی از اطلاعات شما پیدا کردیم!<br/><br/><h4>موارد افشا شده</h4>${breach.join('<br/>')}`,
@@ -530,7 +530,7 @@ async function search_by_hash(hash, hashed = false) {
                     });
                 } else {
                     Swal.fire({
-                        type: 'success',
+                        icon: 'success',
                         title: 'خبر خوب!',
                         confirmButtonText: "باشه",
                         html: 'ما هیچ نشتی از اطلاعات شما پیدا نکردیم، اما ممکن است در آینده ای نزدیک اینطور نباشد!<br/>پس با دقت زیادی از داده های خود مراقبت کنید :) ',
@@ -539,7 +539,7 @@ async function search_by_hash(hash, hashed = false) {
                 }
             } else {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'خطای سرور',
                     confirmButtonText: "باشه",
                     text: res.error
@@ -566,13 +566,17 @@ function subscribe_func(form) {
     getTurnstileToken().then(function (token) {
         showToast('درحال ثبت اشتراک...');
         
-        let param = new URLSearchParams({
+        let formData = new URLSearchParams({
             "hash": hash,
             "email": form.subscribe_form_email.value,
             "name": $('<div>').text(form.subscribe_form_fullname.value).html(),
             "token": token
         });
-        fetch('/api/subscribe.php?' + param.toString())
+        fetch('/api/subscribe.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        })
             .then(function (response) {
                 return response.json();
             })
@@ -582,14 +586,14 @@ function subscribe_func(form) {
                 if (res.status == 0) {
                     if (Object.size(res.result) > 0) {
                         Swal.fire({
-                            type: 'success',
+                            icon: 'success',
                             title: 'ثبت اشتراک انجام شد',
                             confirmButtonText: "باشه",
                             html: 'یک لینک تایید به ایمیل شما ارسال شد، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید. اگرچه نشتی از اطلاعات شخصی شما پیدا شده اما در صورت پیدا شدن نشتی جدید در مقیاس بزرگ، بلافاصله به شما اطلاع داده می شود.'
                         });
                     } else {
                         Swal.fire({
-                            type: 'success',
+                            icon: 'success',
                             title: 'ثبت اشتراک انجام شد',
                             confirmButtonText: "باشه",
                             html: 'یک لینک تایید به ایمیل شما ارسال شد، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید. در حال حاضر هیچ نشتی از اطلاعات شخصی شما پیدا نشد، در صورت کشف نشتی جدید در مقیاس بزرگ، بلافاصله به شما اطلاع داده می شود.'
@@ -597,7 +601,7 @@ function subscribe_func(form) {
                     }
                 } else {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Server error',
                         confirmButtonText: "باشه",
                         text: res.error
@@ -624,11 +628,15 @@ function subscription_status_func(form) {
     getTurnstileToken().then(function (token) {
         showToast('درحال بررسی وضعیت...');
         
-        let param = new URLSearchParams({
+        let formData = new URLSearchParams({
             "email": form.email.value,
             "token": token
         });
-        fetch('/api/subscription_status.php?' + param.toString())
+        fetch('/api/subscription_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        })
             .then(function (res) {
                 return res.json();
             }).then(function (res) {
@@ -641,7 +649,7 @@ function subscription_status_func(form) {
                         $('#subscribe_form_email').val(form.email.value);
                     } else if (res.result == 'verification_pending') {
                         Swal.fire({
-                            type: 'info',
+                            icon: 'info',
                             title: 'آدرس تایید نشده',
                             confirmButtonText: "باشه",
                             html: 'این  آدرس ایمیل در سامانه باخبرم کن ثبت شده اما هنوز تایید نشده است، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید.'
@@ -653,7 +661,7 @@ function subscription_status_func(form) {
                     }
                 } else {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'خطایی روی داد',
                         confirmButtonText: "باشه",
                         text: res.error
@@ -681,12 +689,16 @@ function unsubscribe_func(form) {
     getTurnstileToken().then(function (token) {
         showToast('درحال لغو اشتراک...');
         
-        let param = new URLSearchParams({
+        let formData = new URLSearchParams({
             "hash": hash,
             "email": form.unsubscribe_form_email.value,
             "token": token
         });
-        fetch('/api/unsubscribe.php?' + param.toString())
+        fetch('/api/unsubscribe.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        })
             .then(function (res) {
                 return res.json();
             }).then(function (res) {
@@ -694,14 +706,14 @@ function unsubscribe_func(form) {
                 Swal.close();
                 if (res.status == 0) {
                     Swal.fire({
-                        type: 'success',
+                        icon: 'success',
                         title: 'لغو اشتراک انجام شد',
                         confirmButtonText: "باشه",
                         html: 'شما با موفقیت اشتراک خود را از سامانه باخبرم کن لغو کردید. '
                     });
                 } else {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'خطایی روی داد',
                         confirmButtonText: "باشه",
                         text: res.error
@@ -722,7 +734,7 @@ function unsubscribe_func(form) {
 
 function showToast(title, type = "info") {
     Swal.fire({
-        type: type,
+        icon: type,
         title: title,
         toast: true,
         position: 'top-end',
