@@ -21,7 +21,6 @@ require 'config.php';
       	<!-- JavaScript -->
         <script src="https://cdn.jsdelivr.net/gh/emn178/js-sha1/build/sha1.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
         <script>
         function onTurnstileLoad() {
             if (typeof initTurnstileWidget === 'function') {
