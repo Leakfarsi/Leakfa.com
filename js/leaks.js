@@ -1,11 +1,10 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        1.1.0
+Version:        1.2.0
 */
 
 $(document).ready(function () {
-    // Read tag details from data attribute
     var tagDetailsEl = document.getElementById('breachesGrid');
     var tag_details = [];
     try {
@@ -16,20 +15,18 @@ $(document).ready(function () {
 
     var activeTagFilter = null;
 
-    // Click event for tag info buttons (inside cards)
     $('[data-tag-id]').click(function () {
         var tagId = $(this).attr('data-tag-id');
         var tag_detail = tag_details.filter(function (x) { return x.id == tagId; })[0];
         if (!tag_detail) return;
         Swal.fire({
-            type: 'info',
+            icon: 'info',
             title: tag_detail.name,
             text: tag_detail.description,
             confirmButtonText: 'باشه!'
         });
     });
 
-    // Modern clipboard API for copy link buttons
     $('.copy-link-btn').click(function (e) {
         e.stopPropagation();
         var anchorLink = $(this).attr('data-anchor');
@@ -38,14 +35,13 @@ $(document).ready(function () {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(function () {
                 Swal.fire({
-                    type: 'success',
+                    icon: 'success',
                     title: 'آدرس کپی شد!',
                     text: 'آدرس روایت این نشت در کلیپ‌بورد شما کپی شد.',
                     confirmButtonText: 'باشه!'
                 });
             });
         } else {
-            // Fallback for older browsers
             var tempInput = document.createElement('input');
             tempInput.value = url;
             document.body.appendChild(tempInput);
@@ -53,7 +49,7 @@ $(document).ready(function () {
             document.execCommand('copy');
             document.body.removeChild(tempInput);
             Swal.fire({
-                type: 'success',
+                icon: 'success',
                 title: 'آدرس کپی شد!',
                 text: 'آدرس روایت این نشت در کلیپ‌بورد شما کپی شد.',
                 confirmButtonText: 'باشه!'
@@ -61,12 +57,10 @@ $(document).ready(function () {
         }
     });
 
-    // Also keep title click for copy (backward compat)
     $('.title').click(function () {
         $(this).closest('.title-wrap').find('.copy-link-btn').trigger('click');
     });
 
-    // Disclaimer accordion toggle
     $('#disclaimerToggle').on('click keypress', function (e) {
         if (e.type === 'keypress' && e.which !== 13 && e.which !== 32) return;
         e.preventDefault();
@@ -77,18 +71,15 @@ $(document).ready(function () {
         $(this).find('.disclaimer-chevron').toggleClass('rotated');
     });
 
-    // Search functionality
     $('#breachSearch').on('input', function () {
         $('#searchClear').toggleClass('visible', $(this).val().length > 0);
         filterBreaches();
     });
 
-    // Clear search
     $('#searchClear').on('click', function () {
         $('#breachSearch').val('').trigger('input').focus();
     });
 
-    // Sort functionality
     $('#breachSort').on('change', function () {
         var sortBy = $(this).val();
         var grid = $('#breachesGrid');
@@ -107,7 +98,6 @@ $(document).ready(function () {
         });
     });
 
-    // Tag filter chips
     $('.tag-chip[data-filter-tag]').on('click', function () {
         var tagId = $(this).data('filter-tag');
 
@@ -134,13 +124,11 @@ $(document).ready(function () {
         filterBreaches();
     });
 
-    // Tag toggle button (show/hide chips)
     $('#tagToggleBtn').on('click', function () {
         $('#tagFilterChips').toggleClass('chips-visible');
         $(this).toggleClass('active');
     });
 
-    // Update active count badge
     function updateTagBadge() {
         if (activeTagFilter) {
             $('#tagActiveCount').text('۱').show();
