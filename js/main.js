@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.0.0
+Version:        4.1.0
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -70,16 +70,16 @@ const delay = s => {
 };
 
 Object.size = function (obj) {
-    var size = 0,
-        key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
-    }
-    return size;
+    return Object.keys(obj).length;
 };
 
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 function one_step(form) {
-    // Show spinner in button
     $('.search-btn-text').hide();
     $('.search-btn-spinner').show();
     search_by_core(sha1(form.phone.value));
@@ -92,7 +92,6 @@ function resetSearchButton() {
 }
 
 // Share Result
-
 function getShareButtons() {
     return `
     <div class="share-bar">
@@ -128,11 +127,9 @@ async function captureResult(action) {
     var iconColor = isDanger ? '#dc2626' : '#16a34a';
     var iconBg = isDanger ? '#fee2e2' : '#dcfce7';
 
-    // Create a wrapper for the capture with watermark
     var wrapper = document.createElement('div');
     wrapper.style.cssText = 'position:fixed;top:-9999px;left:-9999px;background:#fff;padding:24px;border-radius:16px;width:' + Math.min(card.offsetWidth + 48, 600) + 'px;direction:rtl;font-family:Vazir,sans-serif;';
     
-    // Clone the card
     var clone = card.cloneNode(true);
     var cloneShareBar = clone.querySelector('.share-bar');
     if (cloneShareBar) cloneShareBar.remove();
@@ -143,8 +140,6 @@ async function captureResult(action) {
     clone.style.transform = 'none';
     clone.style.margin = '0';
 
-    // Fix the result-icon: html2canvas can't render inline SVGs reliably
-    // Convert SVGs to <img> tags with data URI sources instead
     var iconDiv = clone.querySelector('.result-icon');
     if (iconDiv) {
         iconDiv.style.background = iconBg;
@@ -170,7 +165,6 @@ async function captureResult(action) {
         iconDiv.appendChild(iconImg);
     }
 
-    // Also fix breach-list-item icons — convert to <img> data URIs
     clone.querySelectorAll('.breach-list-item-icon').forEach(function(iconSpan) {
         var breachSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
         var img = document.createElement('img');
@@ -183,7 +177,6 @@ async function captureResult(action) {
 
     wrapper.appendChild(clone);
 
-    // Add watermark footer
     var watermark = document.createElement('div');
     watermark.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid #e0e0e0;color:#3f617b;font-size:13px;font-weight:500;';
     watermark.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#3f617b" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> <span style="color:#3f617b;">لیک‌فا - leakfa.com</span>';
@@ -210,7 +203,6 @@ async function captureResult(action) {
             canvas.toBlob(async function(blob) {
                 var file = new File([blob], 'leakfa-result.png', { type: 'image/png' });
                 
-                // Try Web Share API (works on mobile — shares the actual image file)
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     try {
                         await navigator.share({
@@ -220,11 +212,10 @@ async function captureResult(action) {
                         });
                         return;
                     } catch (e) {
-                        if (e.name === 'AbortError') return; // User cancelled
+                        if (e.name === 'AbortError') return;
                     }
                 }
                 
-                // Desktop fallback: download image + open share link
                 var downloadUrl = URL.createObjectURL(blob);
                 var dlLink = document.createElement('a');
                 dlLink.download = 'leakfa-result.png';
@@ -239,7 +230,6 @@ async function captureResult(action) {
                     var twText = encodeURIComponent(SHARE_TEXT);
                     window.open('https://twitter.com/intent/tweet?text=' + twText, '_blank');
                 } else if (action === 'instagram') {
-                    // Instagram has no web share API — guide user
                     showToast('تصویر ذخیره شد! آن را در استوری یا پست اینستاگرام به اشتراک بگذارید.', 'success');
                     return;
                 }
@@ -311,7 +301,7 @@ function initTurnstileWidget() {
         
         turnstileWidget = turnstile.render(turnstileContainer, {
             sitekey: TURNSTILE_SITE_KEY,
-            size: 'invisible',
+            size: 'normal',
             callback: function(token) {
                 window.currentTurnstileToken = token;
             },
@@ -410,7 +400,9 @@ async function search_by_core(hash, hashed = false) {
             if (res.status == 0) {
                 if (Object.size(res.result) > 0) {
                     let breach = [];
-                    for (source in res.result) breach.push(source + ': ' + res.result[source].join('، '));
+                    Object.keys(res.result).forEach(function(source) {
+                        breach.push(escapeHtml(source) + ': ' + res.result[source].map(escapeHtml).join('، '));
+                    });
                     let breachItems = breach.map(item => `
                         <li class="breach-list-item">
                             <span class="breach-list-item-icon">
@@ -457,7 +449,7 @@ async function search_by_core(hash, hashed = false) {
                     }, 350);
                 }
             } else {
-                showToast('خطای سرور: ' + res.error, 'error');
+                showToast('خطای سرور: ' + escapeHtml(res.error), 'error');
             }
         } catch (fetchError) {
             resetSearchButton();
@@ -526,7 +518,9 @@ async function search_by_hash(hash, hashed = false) {
             if (res.status == 0) {
                 if (Object.size(res.result) > 0) {
                     let breach = [];
-                    for (source in res.result) breach.push(source + ': ' + res.result[source].join('، '));
+                    Object.keys(res.result).forEach(function(source) {
+                        breach.push(escapeHtml(source) + ': ' + res.result[source].map(escapeHtml).join('، '));
+                    });
                     Swal.fire({
                         type: 'error',
                         title: 'اوه نه، یه خبر بد',
