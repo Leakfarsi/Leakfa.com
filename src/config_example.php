@@ -30,5 +30,7 @@ define('POW_DIFF', 5);
 
 $connection_string = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4', DB_HOST, DB_NAME);
 $db = new PDO($connection_string, DB_USER, DB_PASS);
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $connection_string2 = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4', DB2_HOST, DB2_NAME);
 $db2 = new PDO($connection_string2, DB2_USER, DB2_PASS);
+$db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
