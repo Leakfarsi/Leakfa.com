@@ -126,12 +126,8 @@ function is_account_verify($email){
 	$stmt->execute([
         'email' => $email
 	]);
-    $res = $stmt->fetch(PDO::FETCH_ASSOC)["id"];
-    if ($res == ""){
-        return 0;
-    }else{
-        return 1;
-    }
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return ($row && $row['id'] !== '') ? 1 : 0;
 }
 
 function is_account_exist($email){
@@ -140,12 +136,8 @@ function is_account_exist($email){
 	$stmt->execute([
         'email' => $email
 	]);
-    $res = $stmt->fetch(PDO::FETCH_ASSOC)["id"];
-    if ($res == ""){
-        return 0;
-    }else{
-        return 1;
-    }
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return ($row && $row['id'] !== '') ? 1 : 0;
 }
 
 function reduce_items($items){
@@ -167,29 +159,32 @@ function search($hash){
     $hashRow = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if(!$hashRow){
-        search_log($_GET['hash'], []);
+        search_log($hash, []);
         return $res;
     }
     
-    $stmt = $db->prepare("SELECT source_id FROM breach_relation WHERE hash_id = ?");
+    $stmt = $db->prepare("
+        SELECT bs.name AS source_name, bi.name AS item_name
+        FROM breach_relation br
+        INNER JOIN breach_source bs ON bs.id = br.source_id
+        INNER JOIN source_item si ON si.source = br.source_id
+        INNER JOIN breach_item bi ON bi.id = si.item
+        WHERE br.hash_id = ?
+        ORDER BY bs.name
+    ");
     $stmt->execute([$hashRow['id']]);
-    $sources = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    foreach($sources as $val){
-        $stmt = $db->prepare("SELECT name FROM breach_source WHERE id = ?");
-        $stmt->execute([$val['source_id']]);
-        $source_info = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        $stmt = $db->prepare("SELECT name FROM source_item 
-                              INNER JOIN breach_item s ON s.id = source_item.item 
-                              WHERE source = ?");
-        $stmt->execute([$val['source_id']]);
-        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $items = reduce_items($items);
-        $res['result'][$source_info['name']] = $items;
+    foreach($rows as $row){
+        if(!isset($res['result'][$row['source_name']])){
+            $res['result'][$row['source_name']] = [];
+        }
+        if(!in_array($row['item_name'], $res['result'][$row['source_name']])){
+            $res['result'][$row['source_name']][] = $row['item_name'];
+        }
     }
     
-    search_log($_GET['hash'], $res['result']);
+    search_log($hash, $res['result']);
     return $res;
 }
 
@@ -223,7 +218,7 @@ function subscribe($name, $email, $hash){
             $res['error'] = 'این آدرس ایمیل در سامانه باخبرم کن ثبت شده اما هنوز تایید نشده است، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید.';
         }
     }else{
-        $code = sha1(sprintf("%10d", mt_rand(1, 9999999999)) . $hash);
+        $code = bin2hex(random_bytes(20));
         if(mail_verify($email, $name, $hash, $code)){
             global $db2;
             $stmt = $db2->prepare("INSERT INTO `subscribers`(`name`, `email`, `hash`, `email_verify_code`, `sub_ip`, `sub_time`) VALUES (:name, :email, :hash, :code, :ip, NOW())");
@@ -235,7 +230,7 @@ function subscribe($name, $email, $hash){
                 'ip' => get_ip()
             ]);
 
-            $res = search($_GET['hash']);
+            $res = search($hash);
         }else{
             $res['status'] = '1';
             $res['error'] = 'E-mail Send Error';
@@ -252,7 +247,7 @@ function verify_code($code){
     ]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
     $id = $data['id'];
-    if ($id != ''){;
+    if ($id != ''){
         if ($data['email_verify'] != "1"){
             $stmt = $db2->prepare("UPDATE `subscribers` SET `email_verify`=1, `email_verify_time`=NOW(),`email_verify_ip`=:ip WHERE `id`=:id");
             $stmt->execute([
