@@ -3,12 +3,12 @@ require 'config.php';
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com; font-src 'self'; frame-src https://challenges.cloudflare.com;");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fa" dir="rtl">
     <head>
         <meta charset="utf-8" />
         <title><?= isset($title) ? $title . ' | ' : '' ?>سامانه ردیابی نشت اطلاعات ایرانیان</title>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" />
         <link rel="stylesheet" type="text/css" href="/styles/main.css" />
       
       	<!-- Favicon -->
@@ -38,7 +38,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
     </head>
 
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark" data-bs-theme="dark">
             <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="Leakfa" />
@@ -49,7 +49,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbar">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                    <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                         <?php $uri = $_SERVER['REQUEST_URI']; ?>
                         <li class="nav-item <?= $uri == '/search.php' ? 'active' : '' ?>">
                             <a class="nav-link" href="search.php">جستجوی نشت</a>
