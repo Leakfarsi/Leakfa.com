@@ -32,7 +32,6 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="/js/detectIE.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <?php include 'src/og.php'; ?>
     </head>
