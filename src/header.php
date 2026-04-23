@@ -53,8 +53,8 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
                 <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                         <?php $uri = $_SERVER['REQUEST_URI']; ?>
-                        <li class="nav-item <?= $uri == '/search.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="search.php">
+                        <li class="nav-item <?= $uri == '/' ? 'active' : '' ?>">
+                            <a class="nav-link" href="/">
                                 <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                                 جستجوی نشت
                             </a>
