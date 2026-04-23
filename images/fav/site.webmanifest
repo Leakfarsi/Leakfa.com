@@ -1,6 +1,8 @@
 {
   "name": "Leakfa",
   "short_name": "Leakfa",
+  "description": "سامانه ردیابی نشت اطلاعات ایرانیان",
+  "start_url": "/",
   "icons": [
     {
       "src": "/images/fav/web-app-manifest-192x192.png",
