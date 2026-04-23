@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.2.0
+Version:        4.3.0
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -60,6 +60,26 @@ if (!checkPopupDisplayed()) {
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof turnstile !== 'undefined') {
         initTurnstileWidget();
+    }
+
+    var toggler = document.querySelector('.navbar-toggler');
+    var navCollapse = document.getElementById('navbar');
+    if (toggler && navCollapse) {
+        navCollapse.addEventListener('show.bs.collapse', function() {
+            toggler.setAttribute('aria-expanded', 'true');
+        });
+        navCollapse.addEventListener('hide.bs.collapse', function() {
+            toggler.setAttribute('aria-expanded', 'false');
+        });
+        var navLinks = navCollapse.querySelectorAll('.navbar-nav:not(.nav-social) .nav-link:not(.dropdown-toggle)');
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 992) {
+                    var bsCollapse = bootstrap.Collapse.getInstance(navCollapse);
+                    if (bsCollapse) bsCollapse.hide();
+                }
+            });
+        });
     }
 });
 
