@@ -3,10 +3,10 @@ require_once '../src/common.php';
 $res = [];
 $res['status'] = 0;
 
-$hash = isset($_GET['hash']) ? $_GET['hash'] : '';
-$mode = isset($_GET['mode']) ? $_GET['mode'] : '';
-$token = isset($_GET['token']) ? $_GET['token'] : '';
-$nonce = isset($_GET['nonce']) ? $_GET['nonce'] : '';
+$hash = isset($_REQUEST['hash']) ? $_REQUEST['hash'] : '';
+$mode = isset($_REQUEST['mode']) ? $_REQUEST['mode'] : '';
+$token = isset($_REQUEST['token']) ? $_REQUEST['token'] : '';
+$nonce = isset($_REQUEST['nonce']) ? $_REQUEST['nonce'] : '';
 
 if(!is_sha1($hash)){
 	$res['status'] = '1';
