@@ -38,7 +38,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
     </head>
 
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark" data-bs-theme="dark">
+        <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" href="/">
                     <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="Leakfa" />
