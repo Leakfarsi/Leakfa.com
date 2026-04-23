@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.1.0
+Version:        3.2.0
 */
 
 @font-face {
@@ -23,7 +23,6 @@ Version:        3.1.0
 
 html {
     height: 100%;
-    direction: rtl;
 }
 
 body {
@@ -51,16 +50,40 @@ nav {
     background: var(--theme-color-darker);
 }
 
+/* BS5 navbar-dark overrides */
+.navbar-dark .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-dark .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-dark .navbar-brand {
+    color: #fff;
+}
+
 .navbar-dark .navbar-nav .nav-link {
     color: #e2e2e2;
-    direction: rtl;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus {
+    color: #fff;
+}
+
+/* BS5: .active is on the link, not the li */
+.navbar-dark .navbar-nav .active > .nav-link,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #fff;
 }
 
 .dropdown-menu {
-    right: 0;
-    left: auto;
     padding-right: 1px;
     padding-left: 1px;
+    text-align: right;
+    background-color: #fff;
+    color: #212529;
 }
 
 .dropdown-item {
@@ -88,10 +111,34 @@ nav {
     border-color: var(--theme-color);
 }
 
-/* Jumbotron / Headers */
+/* BS5 removed .btn-block — recreate it */
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* BS5 removed .form-group — recreate spacing */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Jumbotron / Headers (BS5 removed .jumbotron) */
 .jumbotron {
     background: var(--theme-color);
     color: #FFF;
+    padding: 4rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 0;
+}
+
+.jumbotron.jumbotron-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.jumbotron .lead {
+    font-size: 1.15rem;
+    font-weight: 300;
 }
 
 footer.jumbotron {
@@ -298,7 +345,7 @@ p + h3.breach-title {
 }
 
 .leaks-search-clear.visible {
-    display: inline-flex !important;
+    display: inline-flex;
 }
 
 .leaks-compact-actions {
@@ -591,6 +638,11 @@ p + h3.breach-title {
     border-radius: 6px;
     margin: 2px;
     font-size: 0.78rem;
+    -webkit-transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: opacity;
 }
 
 .breach .tags .btn:hover {
@@ -1366,4 +1418,18 @@ p + h3.breach-title {
     .share-bar-buttons {
         gap: 6px;
     }
+}
+
+.swal2-styled.swal2-confirm {
+    background-color: var(--theme-color) !important;
+    border-color: var(--theme-color) !important;
+}
+
+.swal2-styled.swal2-confirm:hover {
+    background-color: var(--theme-color-darker) !important;
+    border-color: var(--theme-color-darker) !important;
+}
+
+.swal2-styled.swal2-confirm:focus {
+    box-shadow: 0 0 0 3px rgba(63, 97, 123, 0.4) !important;
 }
