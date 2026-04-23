@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.2.0
+Version:        3.3.0
 */
 
 @font-face {
@@ -48,6 +48,10 @@ body {
 /* Navigation */
 nav {
     background: var(--theme-color-darker);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
 /* BS5 navbar-dark overrides */
@@ -56,15 +60,72 @@ nav {
 }
 
 .navbar-dark .navbar-toggler {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.15);
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    position: relative;
+    width: 42px;
+    height: 36px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Only show as flex on mobile (Bootstrap hides it on lg+) */
+@media (max-width: 991.98px) {
+    .navbar-dark .navbar-toggler {
+        display: flex;
+    }
+}
+
+.navbar-dark .navbar-toggler:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-dark .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+/* Animated hamburger bars */
+.toggler-bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-bar:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-toggler[aria-expanded="true"] .toggler-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 .navbar-dark .navbar-brand {
     color: #fff;
+    font-weight: var(--bold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
 }
 
 .navbar-dark .navbar-nav .nav-link {
-    color: #e2e2e2;
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.2s ease, background 0.2s ease;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
@@ -72,10 +133,41 @@ nav {
     color: #fff;
 }
 
+/* Nav icons — hidden on desktop, shown on mobile */
+.nav-icon {
+    display: none;
+    flex-shrink: 0;
+}
+
 /* BS5: .active is on the link, not the li */
 .navbar-dark .navbar-nav .active > .nav-link,
 .navbar-dark .navbar-nav .nav-link.active {
     color: #fff;
+}
+
+/* Social icons row */
+.nav-social {
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+.nav-social .nav-link {
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.nav-social .nav-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+/* Divider between nav links and social on mobile */
+.nav-social-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 8px 0;
 }
 
 .dropdown-menu {
@@ -93,6 +185,123 @@ nav {
 .dropdown-item.active,
 .dropdown-item:active {
     background-color: var(--theme-color-darker);
+}
+
+/* ===== Mobile Header Styles ===== */
+@media (max-width: 991.98px) {
+    .navbar {
+        padding: 8px 0;
+    }
+
+    .navbar-collapse {
+        background: var(--theme-color-darker);
+        border-radius: 0 0 12px 12px;
+        margin: 8px -12px 0;
+        padding: 8px 16px 16px;
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Show nav icons on mobile */
+    .nav-icon {
+        display: inline-block;
+        opacity: 0.7;
+    }
+
+    .navbar-nav .nav-item {
+        margin: 0;
+    }
+
+    .navbar-dark .navbar-nav .nav-link {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        margin: 2px 0;
+    }
+
+    .navbar-dark .navbar-nav .nav-link:hover,
+    .navbar-dark .navbar-nav .nav-link:focus {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Active state highlight on mobile */
+    .navbar-dark .navbar-nav .active > .nav-link,
+    .navbar-dark .navbar-nav .nav-link.active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-weight: var(--bold);
+    }
+
+    /* Dropdown on mobile */
+    .dropdown-menu {
+        background: rgba(255, 255, 255, 0.06);
+        border: none;
+        border-radius: 8px;
+        margin: 0 8px 4px;
+        padding: 4px;
+    }
+
+    .dropdown-item {
+        color: rgba(255, 255, 255, 0.85);
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+    }
+
+    .dropdown-item.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+
+    .dropdown-divider {
+        border-color: rgba(255, 255, 255, 0.1);
+        margin: 4px 8px;
+    }
+
+    /* Social icons on mobile — centered row */
+    .nav-social {
+        flex-direction: row;
+        justify-content: center;
+        gap: 4px;
+        padding: 4px 0 0;
+    }
+
+    .nav-social .nav-link {
+        padding: 10px 12px;
+        border-radius: 10px;
+    }
+
+    .nav-social .nav-link img {
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+    }
+
+    .nav-social .nav-link:hover img {
+        opacity: 1;
+    }
+}
+
+/* Extra small mobile tweaks */
+@media (max-width: 375px) {
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+
+    .navbar-brand img {
+        width: 26px !important;
+        height: 26px !important;
+    }
+
+    .nav-social .nav-link {
+        padding: 8px 10px;
+    }
 }
 
 /* Form */
@@ -141,15 +350,105 @@ nav {
     font-weight: 300;
 }
 
-footer.jumbotron {
-    margin-bottom: 0;
-    padding: 1rem 0;
-    font-weight: var(--bold);
-    font-size: 1.1em;
+/* Footer */
+.site-footer {
+    background: var(--theme-color-darker);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 1.5rem 0 1rem;
+    margin-top: auto;
+    font-size: 0.9rem;
 }
 
-footer.jumbotron p {
-    margin-bottom: 0;
+.site-footer a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.site-footer a:hover {
+    color: #fff;
+}
+
+.footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer-info {
+    order: 0;
+}
+
+.footer-row .footer-social {
+    order: 1;
+}
+
+.footer-brand strong {
+    color: #fff;
+    font-size: 1rem;
+}
+
+.footer-desc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+}
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.footer-social a:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+}
+
+.footer-social img {
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.footer-social a:hover img {
+    opacity: 1;
+}
+
+.footer-divider {
+    border-color: rgba(255, 255, 255, 0.12);
+    margin: 1.2rem 0 0.8rem;
+}
+
+.footer-bottom {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 991.98px) {
+    .footer-row {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .footer-info {
+        order: 0;
+    }
+
+    .footer-row .footer-social {
+        order: 1;
+        justify-content: center;
+    }
 }
 
 .display-4 {
@@ -1420,6 +1719,7 @@ p + h3.breach-title {
     }
 }
 
+/* SweetAlert2 — Override default button color */
 .swal2-styled.swal2-confirm {
     background-color: var(--theme-color) !important;
     border-color: var(--theme-color) !important;
