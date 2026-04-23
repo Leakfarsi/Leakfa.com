@@ -2,6 +2,16 @@
     require 'src/header.php';
 ?>
 
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Leakfa: Iranian Data Breach Monitoring System",
+    "description": "سامانه ردیابی نشت اطلاعات ایرانیان",
+    "url": "https://leakfa.com/"
+}
+</script>
+
 <section class="search-hero">
     <div class="search-hero-bg"></div>
     <div class="container search-hero-content">
