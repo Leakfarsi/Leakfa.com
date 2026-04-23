@@ -8,7 +8,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
         <meta charset="utf-8" />
         <title><?= isset($title) ? $title . ' | ' : '' ?>سامانه ردیابی نشت اطلاعات ایرانیان</title>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.rtl.min.css" />
         <link rel="stylesheet" type="text/css" href="/styles/main.css" />
       
       	<!-- Favicon -->
@@ -30,7 +30,7 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
         }
         </script>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="/js/detectIE.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
