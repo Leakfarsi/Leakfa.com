@@ -44,62 +44,83 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
                     <img src="/images/logo.svg" width="30" height="30" class="d-inline-block align-top" style="filter: invert(1);" alt="Leakfa" />
                     لیک‌فا | Leakfa
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
-                    <span class="navbar-toggler-icon"></span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="toggler-bar"></span>
+                    <span class="toggler-bar"></span>
+                    <span class="toggler-bar"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav me-auto mt-2 mt-lg-0">
                         <?php $uri = $_SERVER['REQUEST_URI']; ?>
                         <li class="nav-item <?= $uri == '/search.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="search.php">جستجوی نشت</a>
+                            <a class="nav-link" href="search.php">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                جستجوی نشت
+                            </a>
                         </li>
                         <li class="nav-item <?= $uri == '/leaks.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="leaks.php">فهرست نشت‌ها</a>
+                            <a class="nav-link" href="leaks.php">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                فهرست نشت‌ها
+                            </a>
                         </li>
-			            <li class="nav-item <?= $uri == '/notify.php' ? 'active' : '' ?>">
-				            <a class="nav-link" href="notify.php">باخبرم کن</a>
-			            </li>
+                        <li class="nav-item <?= $uri == '/notify.php' ? 'active' : '' ?>">
+                            <a class="nav-link" href="notify.php">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                باخبرم کن
+                            </a>
+                        </li>
                         <li class="nav-item <?= $uri == '/donate.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="donate.php">حمایت مالی</a>
+                            <a class="nav-link" href="donate.php">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                حمایت مالی
+                            </a>
                         </li>
                         <li class="nav-item <?= $uri == '/faq.php' ? 'active' : '' ?>">
-                            <a class="nav-link" href="faq.php">سوالات متداول</a>
+                            <a class="nav-link" href="faq.php">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                سوالات متداول
+                            </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">سایر</a>
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                سایر
+                            </a>
                             <div class="dropdown-menu">
-							    <a class="dropdown-item <?= $uri == '/policy.php' ? 'active' : '' ?>" href="policy.php">خط مشی</a>
+                                <a class="dropdown-item <?= $uri == '/policy.php' ? 'active' : '' ?>" href="policy.php">خط مشی</a>
                                 <a class="dropdown-item <?= $uri == '/about.php' ? 'active' : '' ?>" href="about.php">درباره ما</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item <?= $uri == '/stat.php' ? 'active' : '' ?>" href="stat.php">آمار ها</a>
                             </div>
                         </li>
                     </ul>
-                    <ul class="navbar-nav my-2 my-lg-0" style="flex-direction: row;">
+                    <div class="nav-social-divider d-lg-none"></div>
+                    <ul class="navbar-nav nav-social my-2 my-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://t.me/leakfarsi" target="_blank" rel="noopener noreferrer">
-                                <img src="/images/telegram.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Telegram" />
+                            <a class="nav-link" href="https://t.me/leakfarsi" target="_blank" rel="noopener noreferrer" title="Telegram">
+                                <img src="/images/telegram.svg" width="22" height="22" class="d-inline-block align-top" style="filter: invert(1);" alt="Telegram" />
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://www.youtube.com/leakfarsi" target="_blank" rel="noopener noreferrer">
-                                <img src="/images/youtube.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Youtube" />
+                            <a class="nav-link" href="https://www.youtube.com/leakfarsi" target="_blank" rel="noopener noreferrer" title="Youtube">
+                                <img src="/images/youtube.svg" width="22" height="22" class="d-inline-block align-top" style="filter: invert(1);" alt="Youtube" />
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://twitter.com/leakfarsi" target="_blank" rel="noopener noreferrer">
-                                <img src="/images/twitter.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Twitter" />
+                            <a class="nav-link" href="https://twitter.com/leakfarsi" target="_blank" rel="noopener noreferrer" title="Twitter">
+                                <img src="/images/twitter.svg" width="22" height="22" class="d-inline-block align-top" style="filter: invert(1);" alt="Twitter" />
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="mailto:info@leakfa.com">
-                                <img src="/images/email.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Email" />
+                            <a class="nav-link" href="mailto:info@leakfa.com" title="Email">
+                                <img src="/images/email.svg" width="22" height="22" class="d-inline-block align-top" style="filter: invert(1);" alt="Email" />
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" style="padding-right: 0.5rem; padding-left: 0.5rem;" href="https://github.com/Leakfarsi/Leakfa.com" target="_blank" rel="noopener noreferrer">
-                                <img src="/images/github.svg" width="24" height="24" class="d-inline-block align-top" style="filter: invert(1);" alt="Github" />
+                            <a class="nav-link" href="https://github.com/Leakfarsi/Leakfa.com" target="_blank" rel="noopener noreferrer" title="Github">
+                                <img src="/images/github.svg" width="22" height="22" class="d-inline-block align-top" style="filter: invert(1);" alt="Github" />
                             </a>
                         </li>
                     </ul>
