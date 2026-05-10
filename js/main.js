@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.3.0
+Version:        4.4.0
 */
 
 function setCookie(cname, cvalue, exdays) {
@@ -485,11 +485,13 @@ async function search_by_core(hash, hashed = false) {
 
 async function gen_sha1(form) {
     $('#hash').val("");
-    $('#genhash').text('درحال کدگذاری...').attr('disabled', true);
+    $('#genhash span').text('درحال کدگذاری...');
+    $('#genhash').attr('disabled', true);
     showToast('درحال کدگذاری...');
     await delay(700);
     Swal.close();
-    $('#genhash').text('تولید کردن').removeAttr('disabled');
+    $('#genhash span').text('تولید هش');
+    $('#genhash').removeAttr('disabled');
     $('#hash').val(sha1(form.phone.value));
 }
 
@@ -545,7 +547,7 @@ async function search_by_hash(hash, hashed = false) {
                         icon: 'error',
                         title: 'اوه نه، یه خبر بد',
                         confirmButtonText: "باشه",
-                        html: `ما نشتی از اطلاعات شما پیدا کردیم!<br/><br/><h4>موارد افشا شده</h4>${breach.join('<br/>')}`,
+                        html: `یه ردی از اطلاعات شما در نشت‌های داده پیدا کردیم...<br/>وقتشه یکم به امنیتش برسی.<br/><br/><h4>موارد افشا شده</h4>${breach.join('<br/>')}`,
                         footer: '<a href="/notify">باخبرم کن</a>｜<a href="/leaks">فهرست نشت های عمده</a>｜<a href="/faq#what-should-i-do-if-leaked">باید چکار کنم؟</a>'
                     });
                 } else {
@@ -553,7 +555,7 @@ async function search_by_hash(hash, hashed = false) {
                         icon: 'success',
                         title: 'خبر خوب!',
                         confirmButtonText: "باشه",
-                        html: 'ما هیچ نشتی از اطلاعات شما پیدا نکردیم، اما ممکن است در آینده ای نزدیک اینطور نباشد!<br/>پس با دقت زیادی از داده های خود مراقبت کنید :) ',
+                        html: 'فعلاً هیچ ردی از اطلاعات شما در نشت‌های داده پیدا نکردیم...<br/>مراقبش باش.',
                         footer: '<a href="/notify">وقتی نشتی پیدا شد باخبرم کن!</a>'
                     });
                 }
