@@ -42,7 +42,7 @@
                     id="phone"  
                     maxlength="255" 
                     style="text-transform:lowercase"
-                    placeholder="e.g. 09123456789"  
+                    placeholder="e.g. 09123456789 or john@example.com"  
                     autocomplete="off" 
                     autocapitalize="off"
                     autocorrect="off"
