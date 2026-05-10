@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        3.3.0
+Version:        3.4.0
 */
 
 @font-face {
@@ -187,7 +187,7 @@ nav {
     background-color: var(--theme-color-darker);
 }
 
-/* ===== Mobile Header Styles ===== */
+/* Mobile Header Styles */
 @media (max-width: 991.98px) {
     .navbar {
         padding: 8px 0;
@@ -1351,6 +1351,32 @@ p + h3.breach-title {
     to { transform: rotate(360deg); }
 }
 
+/* Trust Badges */
+.trust-badges {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.trust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #777;
+    background: #f5f7f9;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+}
+
+.trust-badge svg {
+    color: var(--theme-color);
+    flex-shrink: 0;
+}
+
 /* How It Works Steps */
 .how-it-works {
     display: flex;
@@ -1547,7 +1573,6 @@ p + h3.breach-title {
 }
 
 /* Share Bar */
-
 .share-bar {
     margin-top: 1.2rem;
     padding-top: 1rem;
@@ -1732,4 +1757,88 @@ p + h3.breach-title {
 
 .swal2-styled.swal2-confirm:focus {
     box-shadow: 0 0 0 3px rgba(63, 97, 123, 0.4) !important;
+}
+
+/* Hash Page */
+.hash-step-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    border: 1px solid #f0f0f0;
+    position: relative;
+    z-index: 2;
+}
+
+.hash-step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.6rem;
+}
+
+.hash-step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--theme-color);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.hash-step-title {
+    font-size: 1.2rem;
+    font-weight: var(--bold);
+    color: var(--theme-color-darker);
+    margin: 0;
+}
+
+.hash-step-desc {
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.hash-step-desc code {
+    background: rgba(63, 97, 123, 0.08);
+    color: var(--theme-color-darker);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.hash-gen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Step Connector Arrow */
+.hash-step-connector {
+    display: flex;
+    justify-content: center;
+    padding: 0.8rem 0;
+    color: var(--theme-color);
+    opacity: 0.6;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .hash-step-card {
+        padding: 1.4rem 1.2rem;
+    }
+
+    .hash-step-title {
+        font-size: 1rem;
+    }
+
+    .hash-step-desc {
+        font-size: 0.82rem;
+    }
 }
