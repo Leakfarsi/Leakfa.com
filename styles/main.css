@@ -1351,32 +1351,6 @@ p + h3.breach-title {
     to { transform: rotate(360deg); }
 }
 
-/* Trust Badges */
-.trust-badges {
-    display: flex;
-    justify-content: center;
-    gap: 1.2rem;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.trust-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    color: #777;
-    background: #f5f7f9;
-    padding: 6px 12px;
-    border-radius: 20px;
-    border: 1px solid #eee;
-}
-
-.trust-badge svg {
-    color: var(--theme-color);
-    flex-shrink: 0;
-}
-
 /* How It Works Steps */
 .how-it-works {
     display: flex;
