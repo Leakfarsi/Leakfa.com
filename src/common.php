@@ -74,7 +74,7 @@ function get_all_breach_tags(){
 
 function get_all_breach_items(){
     global $db;
-    $stmt = $db->prepare("SELECT `source_item`.`source`,`breach_item`.`name` FROM `source_item` INNER JOIN `breach_item` on `breach_item`.`id` = `source_item`.`item`");
+    $stmt = $db->prepare("SELECT `source_item`.`source`,`breach_item`.`name` FROM `source_item` INNER JOIN `breach_item` on `breach_item`.`id` = `source_item`.`item` ORDER BY `source_item`.`id` ASC");
     $stmt->execute();
     $rows = $stmt->fetchall(PDO::FETCH_ASSOC);
     $grouped = [];
