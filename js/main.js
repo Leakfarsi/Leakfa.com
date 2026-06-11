@@ -1,67 +1,30 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.4.0
+Version:        4.4.1
 */
 
-function setCookie(cname, cvalue, exdays) {
-    try {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    } catch (error) {
-        console.error('Error setting cookie:', error);
-    }
+// Input Normalization
+function normalizePhone(value) {
+    return value
+        .replace(/[\u06F0-\u06F9]/g, function(d) { return d.charCodeAt(0) - 0x06F0; }) // Persian digits
+        .replace(/[\u0660-\u0669]/g, function(d) { return d.charCodeAt(0) - 0x0660; }) // Arabic digits
+        .trim();
 }
 
-function getCookie(cname) {
-    try {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for(var i = 0; i <ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    } catch (error) {
-        console.error('Error getting cookie:', error);
-        return "";
-    }
+function normalizeEmail(value) {
+    return value.toLowerCase().trim();
 }
 
-function checkPopupDisplayed() {
-    var popupDisplayed = getCookie("popupDisplayed");
-    return popupDisplayed === "true";
-}
-
-function displayPopup() {
-    setCookie("popupDisplayed", "true", 30); // Expire in 30 days
-    Swal.fire({
-       icon: 'info',
-       title: 'نکته مهم:',
-       confirmButtonText: "باشه", 
-       width:'90%',
-       html: '<p>هنگام وارد کردن شماره تلفن همراه از کیبورد اعداد انگلیسی و هنگام وارد کردن آدرس ایمیل از حروف کوچک برای نگارش استفاده کنید، در غیر این صورت هش متفاوتی تولید شده و نتیجه دیگری به شما نمایش داده می‌شود.</p>'
-    });
-}
-
-if (!checkPopupDisplayed()) {
-   displayPopup();
-}
-
-// Turnstile widget
+// Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Turnstile
     if (typeof turnstile !== 'undefined') {
         initTurnstileWidget();
     }
 
+    // Navbar toggler
     var toggler = document.querySelector('.navbar-toggler');
     var navCollapse = document.getElementById('navbar');
     if (toggler && navCollapse) {
@@ -81,8 +44,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Real-time input normalization
+    var phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            var pos = this.selectionStart;
+            var normalized = normalizeEmail(normalizePhone(this.value));
+            if (normalized !== this.value) {
+                this.value = normalized;
+                this.setSelectionRange(pos, pos);
+            }
+        });
+    }
 });
 
+// Utilities
 const delay = s => {
     return new Promise(function (resolve, reject) {
         setTimeout(resolve, s);
@@ -99,10 +76,13 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+// Search (one-step)
 function one_step(form) {
     $('.search-btn-text').hide();
     $('.search-btn-spinner').show();
-    search_by_core(sha1(form.phone.value));
+    var raw = form.phone.value;
+    var normalized = normalizeEmail(normalizePhone(raw));
+    search_by_core(sha1(normalized));
 }
 
 function resetSearchButton() {
@@ -232,7 +212,7 @@ async function captureResult(action) {
                         });
                         return;
                     } catch (e) {
-                        if (e.name === 'AbortError') return; // User cancelled
+                        if (e.name === 'AbortError') return;
                     }
                 }
                 
@@ -263,6 +243,7 @@ async function captureResult(action) {
     }
 }
 
+// Hide search extras
 function hideSearchExtras() {
     document.querySelectorAll('.trust-badges, .how-it-works, .search-alt-link').forEach(function(el) {
         el.style.overflow = 'hidden';
@@ -292,21 +273,33 @@ function showSearchExtras() {
     });
 }
 
+// Rate Limiting
 function incrementSearchCount() {
-    var searchCount = parseInt(getCookie("searchCount")) || 0;
-    searchCount++;
-    setCookie("searchCount", searchCount, 1); // Expire in 1 day
+    var data = JSON.parse(localStorage.getItem("searchCount") || '{}');
+    var now = new Date().getTime();
+    if (data.expiry && now > data.expiry) {
+        data = {};
+    }
+    data.count = (data.count || 0) + 1;
+    data.expiry = now + (24 * 60 * 60 * 1000); // 1 day from now
+    localStorage.setItem("searchCount", JSON.stringify(data));
 }
 
 function checkSearchLimit() {
-    var searchCount = parseInt(getCookie("searchCount")) || 0;
-    if (searchCount >= 20) { // Search limit
-        showToast("شما به حد مجاز استفاده از جستجوی نشت رسیده‌اید، لطفاً کمی صبر کنید و یا از API استفاده کنید.");
+    var data = JSON.parse(localStorage.getItem("searchCount") || '{}');
+    var now = new Date().getTime();
+    if (data.expiry && now > data.expiry) {
+        localStorage.removeItem("searchCount");
+        return false;
+    }
+    if (data.count >= 20) { // Search limit
+        showToast("سقف جستجوی امروزت تموم شد! فردا دوباره سر بزن.");
         return true;
     }
     return false;
 }
 
+// Turnstile
 let turnstileWidget = null;
 let turnstileContainer = null;
 
@@ -321,7 +314,7 @@ function initTurnstileWidget() {
         
         turnstileWidget = turnstile.render(turnstileContainer, {
             sitekey: TURNSTILE_SITE_KEY,
-            size: 'normal',
+            size: 'invisible',
             callback: function(token) {
                 window.currentTurnstileToken = token;
             },
@@ -351,7 +344,7 @@ function getTurnstileToken() {
         }
         
         let attempts = 0;
-        const maxAttempts = 100; // 10 Sec wait
+        const maxAttempts = 100;
         
         const checkToken = setInterval(() => {
             attempts++;
@@ -378,6 +371,7 @@ function getTurnstileToken() {
     });
 }
 
+// Core Search
 async function search_by_core(hash, hashed = false) {
     if (checkSearchLimit()) {
         return;
@@ -483,6 +477,7 @@ async function search_by_core(hash, hashed = false) {
     }
 }
 
+// Hash Generator
 async function gen_sha1(form) {
     $('#hash').val("");
     $('#genhash span').text('درحال کدگذاری...');
@@ -492,9 +487,10 @@ async function gen_sha1(form) {
     Swal.close();
     $('#genhash span').text('تولید هش');
     $('#genhash').removeAttr('disabled');
-    $('#hash').val(sha1(form.phone.value));
+    $('#hash').val(sha1(normalizePhone(form.phone.value)));
 }
 
+// Search (two-step)
 function two_step(form) {
     search_by_hash(form.hash.value, true);
 }
@@ -579,9 +575,10 @@ async function search_by_hash(hash, hashed = false) {
     }
 }
 
+// Subscribe
 function subscribe_func(form) {
     $('#subscribe').attr('disabled', true);
-    let hash = sha1(form.subscribe_form_phone.value);
+    let hash = sha1(normalizePhone(form.subscribe_form_phone.value));
     
     showToast('درحال بررسی امنیتی...');
     
@@ -590,7 +587,7 @@ function subscribe_func(form) {
         
         let formData = new URLSearchParams({
             "hash": hash,
-            "email": form.subscribe_form_email.value,
+            "email": normalizeEmail(form.subscribe_form_email.value),
             "name": $('<div>').text(form.subscribe_form_fullname.value).html(),
             "token": token
         });
@@ -642,6 +639,7 @@ function subscribe_func(form) {
     });
 }
 
+// Subscription Status
 function subscription_status_func(form) {
     $('#query').attr('disabled', true);
     
@@ -651,7 +649,7 @@ function subscription_status_func(form) {
         showToast('درحال بررسی وضعیت...');
         
         let formData = new URLSearchParams({
-            "email": form.email.value,
+            "email": normalizeEmail(form.email.value),
             "token": token
         });
         fetch('/api/subscription_status.php', {
@@ -668,7 +666,7 @@ function subscription_status_func(form) {
                     if (res.result == 'not_subscribed') {
                         $('.searchForm').hide();
                         $('.subForm').show();
-                        $('#subscribe_form_email').val(form.email.value);
+                        $('#subscribe_form_email').val(normalizeEmail(form.email.value));
                     } else if (res.result == 'verification_pending') {
                         Swal.fire({
                             icon: 'info',
@@ -679,7 +677,7 @@ function subscription_status_func(form) {
                     } else if (res.result == 'subscribed') {
                         $('.searchForm').hide();
                         $('.unSubForm').show();
-                        $('#unsubscribe_form_email').val(form.email.value);
+                        $('#unsubscribe_form_email').val(normalizeEmail(form.email.value));
                     }
                 } else {
                     Swal.fire({
@@ -702,9 +700,10 @@ function subscription_status_func(form) {
     });
 }
 
+// Unsubscribe
 function unsubscribe_func(form) {
     $('#unsubscribe').attr('disabled', true);
-    let hash = sha1(form.unsubscribe_form_phone.value);
+    let hash = sha1(normalizePhone(form.unsubscribe_form_phone.value));
     
     showToast('درحال بررسی امنیتی...');
     
@@ -713,7 +712,7 @@ function unsubscribe_func(form) {
         
         let formData = new URLSearchParams({
             "hash": hash,
-            "email": form.unsubscribe_form_email.value,
+            "email": normalizeEmail(form.unsubscribe_form_email.value),
             "token": token
         });
         fetch('/api/unsubscribe.php', {
@@ -754,6 +753,7 @@ function unsubscribe_func(form) {
     });
 }
 
+// Toast
 function showToast(title, type = "info") {
     Swal.fire({
         icon: type,
