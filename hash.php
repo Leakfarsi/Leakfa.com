@@ -39,7 +39,6 @@
                         id="phone" 
                         maxlength="255"  
                         placeholder="e.g. 09123456789 or john@example.com" 
-                        style="text-transform:lowercase" 
                         autocomplete="off" 
                         autocapitalize="off"
                         autocorrect="off"
