@@ -1,4 +1,18 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+set_exception_handler(function ($e) {
+    error_log('Uncaught exception: ' . $e->getMessage());
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+    }
+    echo json_encode(['status' => '1', 'error' => 'خطای داخلی سرور، لطفا بعدا دوباره تلاش کنید.']);
+    exit;
+});
+
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'database');
 define('DB_USER', 'username');
@@ -29,8 +43,18 @@ define('EMAIL_TEST_CONTENT', 'Hi, §name§<br/><br/>This is the test letter sent
 define('POW_DIFF', 5);
 
 $connection_string = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4', DB_HOST, DB_NAME);
-$db = new PDO($connection_string, DB_USER, DB_PASS);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $connection_string2 = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4', DB2_HOST, DB2_NAME);
-$db2 = new PDO($connection_string2, DB2_USER, DB2_PASS);
-$db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+try {
+    $db = new PDO($connection_string, DB_USER, DB_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db2 = new PDO($connection_string2, DB2_USER, DB2_PASS);
+    $db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    error_log('Database connection failed: ' . $e->getMessage());
+    if (!headers_sent()) {
+        http_response_code(503);
+        header('Content-Type: application/json; charset=utf-8');
+    }
+    echo json_encode(['status' => '1', 'error' => 'خطای اتصال به پایگاه داده، لطفا بعدا دوباره تلاش کنید.']);
+    exit;
+}
