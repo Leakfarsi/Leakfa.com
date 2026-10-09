@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.0.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 09, 2022 at 07:50 PM
--- Server version: 5.7.14-google-log
--- PHP Version: 7.2.22
+-- Generation Time: Oct 01, 2026 at 00:00 AM
+-- Server version: 5.0.00
+-- PHP Version: 8.0.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,17 +29,18 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `subscribers` (
   `id` int(11) NOT NULL,
-  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hash` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hash` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verify` tinyint(1) NOT NULL DEFAULT '0',
-  `email_verify_code` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_verify_time` timestamp NULL DEFAULT NULL,
   `email_verify_ip` text COLLATE utf8mb4_unicode_ci,
   `sub_time` timestamp NULL DEFAULT NULL,
   `sub_ip` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `disabled` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `disabled` tinyint(1) DEFAULT '0',
+  `link_hash` char(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `link_sent_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
@@ -50,6 +51,8 @@ CREATE TABLE `subscribers` (
 --
 ALTER TABLE `subscribers`
   ADD PRIMARY KEY (`id`) USING BTREE,
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `link_hash` (`link_hash`),
   ADD KEY `hash` (`hash`) USING BTREE;
 
 --
