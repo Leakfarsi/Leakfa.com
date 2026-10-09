@@ -29,7 +29,7 @@ define('SMTP_PORT', 587);
 define('SMTP_USER', 'username');
 define('SMTP_PASS', 'password');
 define('SMTP_SEME', 'tls');
-define('SMTP_EMAIL', 'noreply@domain.com');
+define('SMTP_EMAIL', 'noreply@leakfa.com');
 define('SMTP_NICK', 'Leakfa');
 
 define('TURNSTILE_SITE_KEY', ''); 
