@@ -77,10 +77,16 @@ CREATE TABLE `breach_source` (
   `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `round_k` int UNSIGNED NOT NULL,
+  `breach_date` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `affected_accounts` int UNSIGNED DEFAULT NULL,
   `time` date NOT NULL,
   `major` tinyint(1) NOT NULL DEFAULT '0',
   `category_id` int UNSIGNED DEFAULT NULL,
-  `anchor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+  `anchor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `news_url` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `news_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video_url` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
