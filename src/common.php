@@ -91,8 +91,8 @@ function get_all_breach_items(){
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function simple_email($to, $name, $subject, $content, $code){
-    require 'vendor/autoload.php';
+function simple_email($to, $name, $subject, $body){
+    require_once 'vendor/autoload.php';
     $mail = new PHPMailer();
     $mail->isSMTP();
     $mail->SMTPAuth = true;
@@ -108,36 +108,8 @@ function simple_email($to, $name, $subject, $content, $code){
     $mail->AddAddress($to, $name);
     $mail->AddReplyTo(SMTP_EMAIL,SMTP_NICK);
     $mail->Subject = $subject;
-    $mail->Body = str_replace("§code§", $code, $content);
+    $mail->Body = $body;
     return $mail->Send();
-}
-
-function mail_verify($email, $name, $hash, $code){
-    $content = EMAIL_VERIFICATION_CONTENT;
-    $content = str_replace("§name§", $name, $content);
-    $content = str_replace("§hash§", $hash, $content);
-    $content = str_replace("§code§", $code, $content);
-    return simple_email($email, $name, EMAIL_VERIFICATION_SUBJECT, $content, $code);
-}
-
-function is_account_verify($email){
-    global $db2;
-    $stmt = $db2->prepare("SELECT `id` FROM `subscribers` WHERE email=:email AND `disabled`=0 AND `email_verify`=1");
-	$stmt->execute([
-        'email' => $email
-	]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return ($row && $row['id'] !== '') ? 1 : 0;
-}
-
-function is_account_exist($email){
-    global $db2;
-    $stmt = $db2->prepare("SELECT `id` FROM `subscribers` WHERE email=:email AND `disabled`=0");
-	$stmt->execute([
-        'email' => $email
-	]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return ($row && $row['id'] !== '') ? 1 : 0;
 }
 
 function reduce_items($items){
@@ -188,118 +160,180 @@ function search($hash){
     return $res;
 }
 
-function get_account($email, $hash){
-    global $db2;
-    $stmt = $db2->prepare("SELECT `name` FROM `subscribers` WHERE `email`=:email AND `hash`=:hash AND `disabled`=0");
-	$stmt->execute([
-        'email' => $email,
-        'hash' => $hash
-	]);
-    $res = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $res;
+$mail_queue = [];
+
+function normalize_email($email){
+    return strtolower(trim($email));
 }
 
-function subscribe($name, $email, $hash){
-    $res = [];
+function is_valid_email($email){
+    return strlen($email) <= 191 && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
 
-    if (is_account_exist($email)){
-        $res['status'] = '1';
-        if (is_account_verify($email)){
-            $content = EMAIL_TEST_CONTENT;
-            $account = get_account($email, $hash);
-            if($account['name']){
-                $res['error'] = 'این ایمیل در باخبرم کن قبلا ثبت شده است، یک نامه آزمایشی برای شما ارسال می‌شود.';
-                $content = str_replace("§name§", $name, $content);
-                simple_email($email, $name, EMAIL_TEST_SUBJECT, $content, '');
-            }else{
-                $res['error'] = 'شماره وارد شده با داده های اصلی مطابقت ندارد';
+function clean_name($name){
+    $name = trim(preg_replace('/[\x00-\x1F\x7F]+/u', '', $name));
+    return preg_match('/^.{1,50}$/u', $name) ? $name : false;
+}
+
+function get_subscriber_by_email($email){
+    global $db2;
+    $stmt = $db2->prepare("SELECT * FROM `subscribers` WHERE `email`=:email");
+    $stmt->execute(['email' => $email]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function get_subscriber_by_token($token){
+    global $db2;
+    if (!is_string($token) || !preg_match('/^[0-9a-f]{64}$/', $token)) {
+        return false;
+    }
+    $stmt = $db2->prepare("SELECT * FROM `subscribers` WHERE `link_hash`=:link_hash
+        AND `link_sent_at` >= NOW() - INTERVAL " . (int)LINK_TTL_MINUTES . " MINUTE");
+    $stmt->execute(['link_hash' => hash('sha256', $token)]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function subscriber_state($row){
+    if ($row['disabled']) {
+        return 'unsubscribed';
+    }
+    return $row['email_verify'] ? 'active' : 'new';
+}
+
+function delete_stale_registrations(){
+    global $db2;
+    $db2->exec("DELETE FROM `subscribers` WHERE `email_verify`=0 AND COALESCE(`disabled`, 0)=0
+        AND (`link_sent_at` IS NULL OR `link_sent_at` < NOW() - INTERVAL " . (int)LINK_TTL_MINUTES . " MINUTE)");
+}
+
+function queue_subscriber_mail($row, $subject, $template, $link = ''){
+    global $mail_queue;
+    $name = $row['name'] ?? '';
+    $body = str_replace(
+        ['§name§', '§link§', '§minutes§'],
+        [$name === '' ? '' : ' ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), $link, (int)LINK_TTL_MINUTES],
+        $template
+    );
+    $mail_queue[] = [$row['email'], $name, $subject, $body];
+}
+
+function respond_then_send_mail($res){
+    global $mail_queue;
+    header('Content-Type: application/json');
+    echo json_encode($res);
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    }
+    foreach ($mail_queue as $mail) {
+        if (!simple_email(...$mail)) {
+            error_log('Notification email could not be sent');
+        }
+    }
+    $mail_queue = [];
+}
+
+function send_notify_link($email){
+    global $db2;
+    delete_stale_registrations();
+
+    $row = get_subscriber_by_email($email);
+    if (!$row) {
+        $stmt = $db2->prepare("INSERT IGNORE INTO `subscribers`(`email`, `sub_ip`) VALUES (:email, :ip)");
+        $stmt->execute([
+            'email' => $email,
+            'ip' => get_ip()
+        ]);
+        $row = get_subscriber_by_email($email);
+    }
+
+    if ($row) {
+        $token = bin2hex(random_bytes(32));
+        $stmt = $db2->prepare("UPDATE `subscribers` SET `link_hash`=:link_hash, `link_sent_at`=NOW() WHERE `id`=:id");
+        $stmt->execute(['link_hash' => hash('sha256', $token), 'id' => $row['id']]);
+        $link = SITE_URL . '/notify.php?t=' . $token;
+        if (subscriber_state($row) === 'active') {
+            queue_subscriber_mail($row, EMAIL_MANAGE_LINK_SUBJECT, EMAIL_MANAGE_LINK_CONTENT, $link);
+        } else {
+            queue_subscriber_mail($row, EMAIL_REGISTER_LINK_SUBJECT, EMAIL_REGISTER_LINK_CONTENT, $link);
+        }
+    }
+
+    return [
+        'status' => '0',
+        'message' => 'لینک ثبت یا مدیریت اشتراک به این آدرس ارسال شد؛ صندوق ورودی و پوشه اسپم را بررسی کنید. اگر ایمیلی نرسید، چند دقیقه بعد دوباره امتحان کنید.'
+    ];
+}
+
+function manage_subscription($row, $action, $input){
+    global $db2;
+    $state = subscriber_state($row);
+    $res = ['status' => '1'];
+
+    if ($action === 'unsubscribe') {
+        if ($state !== 'active') {
+            $res['error'] = 'اشتراک فعالی برای لغو وجود ندارد.';
+        } else {
+            $stmt = $db2->prepare("UPDATE `subscribers` SET `disabled`=1 WHERE `id`=:id");
+            $stmt->execute(['id' => $row['id']]);
+            $res = ['status' => '0', 'message' => 'اشتراک شما لغو شد.'];
+        }
+        return $res;
+    }
+
+    if ($action !== 'save') {
+        $res['error'] = 'درخواست نامعتبر است';
+        return $res;
+    }
+
+    $name = clean_name($input['name'] ?? '');
+    $hash = strtolower($input['hash'] ?? '');
+    $phone_changed = $hash !== '' && $row['hash'] !== null && !hash_equals($row['hash'], $hash);
+    $phone_same = $hash !== '' && $row['hash'] !== null && hash_equals($row['hash'], $hash);
+    $name_changed = $name !== false && $name !== $row['name'];
+
+    if ($name === false) {
+        $res['error'] = 'نام باید بین ۱ تا ۵۰ کاراکتر باشد.';
+    } elseif ($hash !== '' && !is_sha1($hash)) {
+        $res['error'] = 'مقدار هش دریافتی صحیح نمی باشد';
+    } elseif ($hash === '' && $row['hash'] === null) {
+        $res['error'] = 'لطفا شماره تلفن همراه خود را وارد کنید.';
+    } else {
+        $params = ['name' => $name, 'id' => $row['id']];
+        $set = "`name`=:name";
+        if ($hash !== '') {
+            $set .= ", `hash`=:hash";
+            $params['hash'] = $hash;
+        }
+        if ($state !== 'active') {
+            $set .= ", `email_verify`=1, `disabled`=0, `email_verify_time`=NOW(), `email_verify_ip`=:ip, `sub_time`=NOW(), `sub_ip`=:ip2";
+            $params['ip'] = get_ip();
+            $params['ip2'] = get_ip();
+        }
+        $stmt = $db2->prepare("UPDATE `subscribers` SET " . $set . " WHERE `id`=:id");
+        $stmt->execute($params);
+
+        $same_note = 'شماره وارد شده همان شماره ثبت‌شده شماست.';
+        if ($state === 'new') {
+            $message = 'اشتراک شما ثبت شد. اگر نشتی از اطلاعات شما در مقیاس بزرگ پیدا شود، به شما اطلاع می‌دهیم.';
+        } elseif ($state === 'unsubscribed') {
+            $message = 'اشتراک شما دوباره فعال شد.';
+            if ($phone_changed) {
+                $message .= ' شماره تلفن شما تغییر کرد.';
+            } elseif ($phone_same) {
+                $message .= ' ' . $same_note;
             }
-        }else{
-            $res['error'] = 'این آدرس ایمیل در سامانه باخبرم کن ثبت شده اما هنوز تایید نشده است، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید.';
+        } elseif ($name_changed && $phone_changed) {
+            $message = 'نام و شماره تلفن شما تغییر کرد.';
+        } elseif ($name_changed) {
+            $message = 'نام شما تغییر کرد.' . ($phone_same ? ' ' . $same_note : '');
+        } elseif ($phone_changed) {
+            $message = 'شماره تلفن شما تغییر کرد.';
+        } elseif ($phone_same) {
+            $message = $same_note . ' تغییری ایجاد نشد.';
+        } else {
+            $message = 'تغییری ایجاد نشد.';
         }
-    }else{
-        $code = bin2hex(random_bytes(20));
-        if(mail_verify($email, $name, $hash, $code)){
-            global $db2;
-            $stmt = $db2->prepare("INSERT INTO `subscribers`(`name`, `email`, `hash`, `email_verify_code`, `sub_ip`, `sub_time`) VALUES (:name, :email, :hash, :code, :ip, NOW())");
-            $stmt->execute([
-                'name' => $name,
-                'email' => $email,
-                'hash' => $hash,
-                'code' => $code,
-                'ip' => get_ip()
-            ]);
-
-            $res = search($hash);
-        }else{
-            $res['status'] = '1';
-            $res['error'] = 'E-mail Send Error';
-        }
-    }
-    return $res;
-}
-
-function verify_code($code){    
-    global $db2;
-    $stmt = $db2->prepare("SELECT `id`,`email_verify` FROM `subscribers` WHERE `email_verify_code`=:code");
-    $stmt->execute([
-        'code' => $code
-    ]);
-    $data = $stmt->fetch(PDO::FETCH_ASSOC);
-    $id = $data['id'];
-    if ($id != ''){
-        if ($data['email_verify'] != "1"){
-            $stmt = $db2->prepare("UPDATE `subscribers` SET `email_verify`=1, `email_verify_time`=NOW(),`email_verify_ip`=:ip WHERE `id`=:id");
-            $stmt->execute([
-                'id' => $id,
-                'ip' => get_ip()
-            ]);
-            return 1; // Verification complete
-        }else{
-            return 0; // Verified
-        }
-    }else{
-        return -1; // Without this code
-    }
-}
-
-function get_subscription_status($email){
-    $res = [
-        'status' => '0'
-    ];
-
-    if (is_account_exist($email)){
-        if (is_account_verify($email)){
-            $res['result'] = 'subscribed';
-        }else{
-            $res['result'] = 'verification_pending';
-        }
-    }else{
-        $res['result'] = 'not_subscribed';
-    }
-    return $res;
-}
-
-function unsubscribe($email, $hash){
-    $res = [
-        'status' => '1'
-    ];
-
-    if (is_account_exist($email)){
-        $account = get_account($email, $hash);
-        if ($account['name']){
-            global $db2;
-            $stmt = $db2->prepare("UPDATE `subscribers` SET `disabled`=1 WHERE `email`=:email AND `hash`=:hash AND `disabled`=0");
-            $stmt->execute([
-                'email' => $email,
-                'hash' => $hash
-            ]);
-            $res['status'] = '0';
-        }else{
-            $res['error'] = "Does not match the original data";
-        }
-    }else{
-        $res['error'] = "This email Not yet subscribed to leaked messages.";
+        $res = ['status' => '0', 'message' => $message];
     }
     return $res;
 }
