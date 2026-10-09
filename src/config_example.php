@@ -29,16 +29,18 @@ define('SMTP_PORT', 587);
 define('SMTP_USER', 'username');
 define('SMTP_PASS', 'password');
 define('SMTP_SEME', 'tls');
-define('SMTP_EMAIL', 'noreply@leakfa.com');
+define('SMTP_EMAIL', 'noreply@domain.com');
 define('SMTP_NICK', 'Leakfa');
 
 define('TURNSTILE_SITE_KEY', ''); 
 define('TURNSTILE_SECRET_KEY', '');
 
-define('EMAIL_VERIFICATION_SUBJECT', 'Please verify your email address');
-define('EMAIL_VERIFICATION_CONTENT', 'Hi, §name§<br/><br/>Thanks for joining Leakfa. To finish subscription, please click the link below to verify your email address.<br/><a href="https://leakfa.com/verify.php?code=§code§">https://leakfa.com/verify.php?code=§code§</a><br/><br/>If a large-scale personal leak is discovered after subscription, you will be notified immediately.<br/>If you have any question, please contact us at: info@leakfa.com<br/><br/>Leakfa Team');
-define('EMAIL_TEST_SUBJECT', 'Leakfa Notification Test');
-define('EMAIL_TEST_CONTENT', 'Hi, §name§<br/><br/>This is the test letter sent by the system<br/><br/>Thanks for your use');
+define('SITE_URL', 'https://leakfa.com');
+define('LINK_TTL_MINUTES', 60);
+define('EMAIL_REGISTER_LINK_SUBJECT', 'تکمیل اشتراک در لیک‌فا');
+define('EMAIL_REGISTER_LINK_CONTENT', '<div dir="rtl" style="text-align:right;font-family:Tahoma,Arial,sans-serif;line-height:1.8;">سلام§name§،<br/><br/>برای عضویت در سرویس باخبرم کن، لینک زیر را باز کنید و نام و شماره تلفن خود را وارد کنید. این لینک تا §minutes§ دقیقه معتبر است:<br/><a href="§link§" dir="ltr">§link§</a><br/><br/>اگر نشتی از اطلاعات شخصی شما در مقیاس بزرگ پیدا شود، بلافاصله به شما اطلاع می‌دهیم.<br/>اگر این درخواست را شما ثبت نکرده‌اید، این ایمیل را نادیده بگیرید؛ هیچ اطلاعاتی ثبت نشده است.<br/>در صورت داشتن هرگونه سؤال با ما در ارتباط باشید: <span dir="ltr">info@leakfa.com</span><br/><br/>تیم لیک‌فا</div>');
+define('EMAIL_MANAGE_LINK_SUBJECT', 'مدیریت اشتراک لیک‌فا');
+define('EMAIL_MANAGE_LINK_CONTENT', '<div dir="rtl" style="text-align:right;font-family:Tahoma,Arial,sans-serif;line-height:1.8;">سلام§name§،<br/><br/>برای تغییر نام یا شماره تلفن، یا لغو اشتراک، لینک زیر را باز کنید. این لینک تا §minutes§ دقیقه معتبر است:<br/><a href="§link§" dir="ltr">§link§</a><br/><br/>اگر این درخواست را شما ثبت نکرده‌اید، این ایمیل را نادیده بگیرید.<br/><br/>تیم لیک‌فا</div>');
 
 define('POW_DIFF', 5);
 
