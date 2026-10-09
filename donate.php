@@ -21,7 +21,7 @@
         </div>
         <div id="address-display">
             <input type="text" id="address-text" class="address-display" value="bc1qcggr0e9yse2pmsvkpdxaaf3eg06klu5h7pzdj3" readonly onclick="copyAddress()" />
-            <img id="qr" src="images/donate/btcQR.png" alt="QR Code" class="address-display" />
+            <img id="qr" src="images/donate/btcQR.jpg" alt="QR Code" class="address-display" />
             <span id="copy-message" class="copy-message">!Copied to clipboard</span>
         </div>
     </div>
