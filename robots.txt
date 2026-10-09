@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /notify.php?t=
 Disallow: /src
 Disallow: /api
-Sitemap: https://domain.com/sitemap.xml
+Sitemap: https://leakfa.com/sitemap.xml
