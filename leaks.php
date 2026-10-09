@@ -105,6 +105,8 @@
 				$tags = isset($allBreachTags[$val['id']]) ? $allBreachTags[$val['id']] : [];
 				$tagIds = $tags ? implode(',', array_column($tags, 'tag')) : '';
 				$leakedItems = isset($allBreachItems[$val['id']]) ? $allBreachItems[$val['id']] : [];
+				$newsUrl = is_http_url($val['news_url']) ? $val['news_url'] : '';
+				$videoUrl = is_http_url($val['video_url']) ? $val['video_url'] : '';
 			?>
 				<div class="breach" data-name="<?= htmlspecialchars($val['name'], ENT_QUOTES, 'UTF-8') ?>" data-magnitude="<?= (int)$val['round_k'] ?>" data-tags="<?= htmlspecialchars($tagIds, ENT_QUOTES, 'UTF-8') ?>">
 					<div class="header">
@@ -152,7 +154,7 @@
 							روایت
 						</h4>
 						<p><?= htmlspecialchars($val['description'], ENT_QUOTES, 'UTF-8') ?></p>
-						<?php if ($val['breach_date'] || $val['time'] || $val['affected_accounts'] || $val['news_url'] || $val['video_url']) { ?>
+						<?php if ($val['breach_date'] || $val['time'] || $val['affected_accounts'] || $newsUrl || $videoUrl) { ?>
 						<div class="breach-meta">
 							<?php if ($val['breach_date'] || $val['time']) { ?>
 							<div class="breach-meta-item">
@@ -166,16 +168,16 @@
 								<span>حساب‌های تحت تاثیر: <?= number_format($val['affected_accounts']) ?></span>
 							</div>
 							<?php } ?>
-							<?php if ($val['news_url']) { ?>
+							<?php if ($newsUrl) { ?>
 							<div class="breach-meta-item">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-								<a href="<?= htmlspecialchars($val['news_url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['news_title'] ?: 'گزارش خبری', ENT_QUOTES, 'UTF-8') ?></a>
+								<a href="<?= htmlspecialchars($newsUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['news_title'] ?: 'گزارش خبری', ENT_QUOTES, 'UTF-8') ?></a>
 							</div>
 							<?php } ?>
-							<?php if ($val['video_url']) { ?>
+							<?php if ($videoUrl) { ?>
 							<div class="breach-meta-item">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-								<a href="<?= htmlspecialchars($val['video_url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['video_title'] ?: 'ویدئو بررسی', ENT_QUOTES, 'UTF-8') ?></a>
+								<a href="<?= htmlspecialchars($videoUrl, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($val['video_title'] ?: 'ویدئو بررسی', ENT_QUOTES, 'UTF-8') ?></a>
 							</div>
 							<?php } ?>
 						</div>
