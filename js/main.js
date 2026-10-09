@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.5.0
+Version:        4.5.5
 */
 
 // Input Normalization
@@ -76,13 +76,25 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+async function sha1(text) {
+    const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // Search (one-step)
-function one_step(form) {
+async function one_step(form) {
     $('.search-btn-text').hide();
     $('.search-btn-spinner').show();
     var raw = form.phone.value;
     var normalized = normalizeEmail(normalizePhone(raw));
-    search_by_core(sha1(normalized));
+    try {
+        var hash = await sha1(normalized);
+    } catch (e) {
+        resetSearchButton();
+        showToast('مرورگر شما از کدگذاری پشتیبانی نمی‌کند', 'error');
+        return;
+    }
+    search_by_core(hash);
 }
 
 function resetSearchButton() {
@@ -406,13 +418,16 @@ async function search_by_core(hash, hashed = false) {
         $('.search-btn-text').text('در حال جستجو...');
         
         let param = new URLSearchParams({
-            "mode": "turnstile",
             "hash": hash,
             "token": token
         });
         
         try {
-            const response = await fetch('/api/search.php?' + param.toString());
+            const response = await fetch('/api/search.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: param.toString()
+            });
             const res = await response.json();
             await delay(700);
             Swal.close();
@@ -495,7 +510,7 @@ async function gen_sha1(form) {
     Swal.close();
     $('#genhash span').text('تولید هش');
     $('#genhash').removeAttr('disabled');
-    $('#hash').val(sha1(normalizePhone(form.phone.value)));
+    $('#hash').val(await sha1(normalizePhone(form.phone.value)));
 }
 
 // Search (two-step)
@@ -529,13 +544,16 @@ async function search_by_hash(hash, hashed = false) {
         $('#search').text('در حال جستجو...');
         
         let param = new URLSearchParams({
-            "mode": "turnstile",
             "hash": hash,
             "token": token
         });
         
         try {
-            const response = await fetch('/api/search.php?' + param.toString());
+            const response = await fetch('/api/search.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: param.toString()
+            });
             const res = await response.json();
             await delay(700);
             Swal.close();
