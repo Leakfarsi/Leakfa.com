@@ -31,27 +31,6 @@ function get_tag_details(){
     return $res;
 }
 
-function get_leaked_items($source){
-    global $db;
-    $stmt = $db->prepare("SELECT `name` FROM `source_item` INNER JOIN `breach_item` `s` on `s`.`id` = `source_item`.`item` WHERE `source`=:source_id");
-    $stmt->execute([
-        'source_id' => $source
-    ]);
-    $items = $stmt->fetchall(PDO::FETCH_ASSOC);
-    $items = reduce_items($items);
-    return $items;
-}
-
-function get_tags($source){
-    global $db;
-    $stmt = $db->prepare("SELECT `source_tag`.`tag`,`name`,`class` FROM `source_tag` INNER JOIN `tag` `s` on `s`.`id` = `source_tag`.`tag` WHERE `source`=:source_id");
-    $stmt->execute([
-        'source_id' => $source
-    ]);
-    $tags = $stmt->fetchall(PDO::FETCH_ASSOC);
-    return $tags;
-}
-
 function get_all_breach_tags(){
     global $db;
     $stmt = $db->prepare("SELECT `source_tag`.`source`,`source_tag`.`tag`,`s`.`name`,`s`.`class` FROM `source_tag` INNER JOIN `tag` `s` on `s`.`id` = `source_tag`.`tag`");
@@ -104,20 +83,13 @@ function simple_email($to, $name, $subject, $body){
     $mail->CharSet = "utf-8";
     $mail->isHTML(true);
     $mail->WordWrap = 50;
+    $mail->Timeout = 10;
     $mail->setFrom(SMTP_EMAIL, SMTP_NICK);
     $mail->AddAddress($to, $name);
     $mail->AddReplyTo(SMTP_EMAIL,SMTP_NICK);
     $mail->Subject = $subject;
     $mail->Body = $body;
     return $mail->Send();
-}
-
-function reduce_items($items){
-    $res = [];
-    foreach($items as $key => $val){
-        array_push($res, $val['name']);
-    }
-    return $res;
 }
 
 function search($hash){
@@ -159,8 +131,6 @@ function search($hash){
     search_log($hash, $res['result']);
     return $res;
 }
-
-$mail_queue = [];
 
 function normalize_email($email){
     return strtolower(trim($email));
@@ -206,30 +176,14 @@ function delete_stale_registrations(){
         AND (`link_sent_at` IS NULL OR `link_sent_at` < NOW() - INTERVAL " . (int)LINK_TTL_MINUTES . " MINUTE)");
 }
 
-function queue_subscriber_mail($row, $subject, $template, $link = ''){
-    global $mail_queue;
+function send_subscriber_mail($row, $subject, $template, $link){
     $name = $row['name'] ?? '';
     $body = str_replace(
         ['§name§', '§link§', '§minutes§'],
         [$name === '' ? '' : ' ' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), $link, (int)LINK_TTL_MINUTES],
         $template
     );
-    $mail_queue[] = [$row['email'], $name, $subject, $body];
-}
-
-function respond_then_send_mail($res){
-    global $mail_queue;
-    header('Content-Type: application/json');
-    echo json_encode($res);
-    if (function_exists('fastcgi_finish_request')) {
-        fastcgi_finish_request();
-    }
-    foreach ($mail_queue as $mail) {
-        if (!simple_email(...$mail)) {
-            error_log('Notification email could not be sent');
-        }
-    }
-    $mail_queue = [];
+    return simple_email($row['email'], $name, $subject, $body);
 }
 
 function send_notify_link($email){
@@ -248,13 +202,25 @@ function send_notify_link($email){
 
     if ($row) {
         $token = bin2hex(random_bytes(32));
-        $stmt = $db2->prepare("UPDATE `subscribers` SET `link_hash`=:link_hash, `link_sent_at`=NOW() WHERE `id`=:id");
+        $stmt = $db2->prepare("UPDATE `subscribers` SET `link_hash`=:link_hash, `link_sent_at`=NOW() WHERE `id`=:id
+            AND (`link_sent_at` IS NULL OR `link_sent_at` < NOW() - INTERVAL 2 MINUTE)");
         $stmt->execute(['link_hash' => hash('sha256', $token), 'id' => $row['id']]);
-        $link = SITE_URL . '/notify.php?t=' . $token;
-        if (subscriber_state($row) === 'active') {
-            queue_subscriber_mail($row, EMAIL_MANAGE_LINK_SUBJECT, EMAIL_MANAGE_LINK_CONTENT, $link);
-        } else {
-            queue_subscriber_mail($row, EMAIL_REGISTER_LINK_SUBJECT, EMAIL_REGISTER_LINK_CONTENT, $link);
+
+        if ($stmt->rowCount() === 1) {
+            $link = SITE_URL . '/notify.php?t=' . $token;
+            if (subscriber_state($row) === 'active') {
+                $sent = send_subscriber_mail($row, EMAIL_MANAGE_LINK_SUBJECT, EMAIL_MANAGE_LINK_CONTENT, $link);
+            } else {
+                $sent = send_subscriber_mail($row, EMAIL_REGISTER_LINK_SUBJECT, EMAIL_REGISTER_LINK_CONTENT, $link);
+            }
+            if (!$sent) {
+                $stmt = $db2->prepare("UPDATE `subscribers` SET `link_hash`=NULL, `link_sent_at`=NULL WHERE `id`=:id");
+                $stmt->execute(['id' => $row['id']]);
+                return [
+                    'status' => '1',
+                    'error' => 'ارسال ایمیل ممکن نشد، لطفا بعداً دوباره تلاش کنید.'
+                ];
+            }
         }
     }
 
@@ -338,6 +304,10 @@ function manage_subscription($row, $action, $input){
     return $res;
 }
 
+function is_http_url($url) {
+    return is_string($url) && preg_match('#^https?://#i', $url) === 1;
+}
+
 function is_sha1($str) {
     return (bool) preg_match('/^[0-9a-f]{40}$/i', $str);
 }
@@ -352,20 +322,6 @@ function search_log($hash, $res){
     ]);
 }
 
-function array_remove_null_return_keys($array)
-{
-    $keys = array();
-    foreach ($array as $_key => $sarr) {
-        foreach ($sarr as $key => $value) {
-            if (!(is_null($sarr[$key]) or trim($sarr[$key]) == '')) {
-                array_push($keys, $key);
-            }
-        }
-    }
-
-    return array_unique($keys);
-}
-
 function turnstile_verify($token){
     $post_data = http_build_query([
             'secret' => TURNSTILE_SECRET_KEY,
@@ -376,12 +332,20 @@ function turnstile_verify($token){
         array(
             'method'  => 'POST',
             'header'  => 'Content-type: application/x-www-form-urlencoded',
-            'content' => $post_data
+            'content' => $post_data,
+            'timeout' => 5
         )
     );
     $context  = stream_context_create($opts);
     $response = file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
-    $result = json_decode($response);
+    $result = $response === false ? null : json_decode($response);
+    if (!is_object($result) || empty($result->success)) {
+        return (object)['success' => false];
+    }
+    $real_key = strpos(TURNSTILE_SECRET_KEY, '0x') === 0;
+    if ($real_key && ($result->hostname ?? '') !== parse_url(SITE_URL, PHP_URL_HOST)) {
+        return (object)['success' => false];
+    }
     return $result;
 }
 
