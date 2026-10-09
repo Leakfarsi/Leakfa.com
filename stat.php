@@ -7,7 +7,7 @@
     <header class="jumbotron jumbotron-fluid">
         <div class="container">
             <h1 ><?=$title?></h1>
-            <p class="lead">داده های موجود در تاریخ <?=$stat['cache_gen_time']?> ثبت شده است.</p>
+            <p class="lead">داده های موجود در تاریخ <?= htmlspecialchars($stat['cache_gen_time'] ?? '', ENT_QUOTES, 'UTF-8') ?> ثبت شده است.</p>
         </div>
     </header>
 
