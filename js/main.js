@@ -1,7 +1,7 @@
 /*
 Author:         Leakfa Team
 Author URI:     https://leakfa.com
-Version:        4.4.1
+Version:        4.5.0
 */
 
 // Input Normalization
@@ -274,29 +274,37 @@ function showSearchExtras() {
 }
 
 // Rate Limiting
-function incrementSearchCount() {
-    var data = JSON.parse(localStorage.getItem("searchCount") || '{}');
+function incrementDailyCount(key) {
+    var data = JSON.parse(localStorage.getItem(key) || '{}');
     var now = new Date().getTime();
     if (data.expiry && now > data.expiry) {
         data = {};
     }
     data.count = (data.count || 0) + 1;
     data.expiry = now + (24 * 60 * 60 * 1000); // 1 day from now
-    localStorage.setItem("searchCount", JSON.stringify(data));
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
-function checkSearchLimit() {
-    var data = JSON.parse(localStorage.getItem("searchCount") || '{}');
+function checkDailyLimit(key, max, message) {
+    var data = JSON.parse(localStorage.getItem(key) || '{}');
     var now = new Date().getTime();
     if (data.expiry && now > data.expiry) {
-        localStorage.removeItem("searchCount");
+        localStorage.removeItem(key);
         return false;
     }
-    if (data.count >= 20) { // Search limit
-        showToast("سقف جستجوی امروزت تموم شد! فردا دوباره سر بزن.");
+    if (data.count >= max) {
+        showToast(message);
         return true;
     }
     return false;
+}
+
+function incrementSearchCount() {
+    incrementDailyCount("searchCount");
+}
+
+function checkSearchLimit() {
+    return checkDailyLimit("searchCount", 20, "سقف جستجوی امروزت تموم شد! فردا دوباره سر بزن.");
 }
 
 // Turnstile
@@ -575,110 +583,43 @@ async function search_by_hash(hash, hashed = false) {
     }
 }
 
-// Subscribe
-function subscribe_func(form) {
-    $('#subscribe').attr('disabled', true);
-    let hash = sha1(normalizePhone(form.subscribe_form_phone.value));
-    
-    showToast('درحال بررسی امنیتی...');
-    
-    getTurnstileToken().then(function (token) {
-        showToast('درحال ثبت اشتراک...');
-        
-        let formData = new URLSearchParams({
-            "hash": hash,
-            "email": normalizeEmail(form.subscribe_form_email.value),
-            "name": $('<div>').text(form.subscribe_form_fullname.value).html(),
-            "token": token
-        });
-        fetch('/api/subscribe.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString()
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (res) {
-                $('#subscribe').removeAttr('disabled');
-                Swal.close();
-                if (res.status == 0) {
-                    if (Object.size(res.result) > 0) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'ثبت اشتراک انجام شد',
-                            confirmButtonText: "باشه",
-                            html: 'یک لینک تایید به ایمیل شما ارسال شد، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید. اگرچه نشتی از اطلاعات شخصی شما پیدا شده اما در صورت پیدا شدن نشتی جدید در مقیاس بزرگ، بلافاصله به شما اطلاع داده می شود.'
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'ثبت اشتراک انجام شد',
-                            confirmButtonText: "باشه",
-                            html: 'یک لینک تایید به ایمیل شما ارسال شد، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید. در حال حاضر هیچ نشتی از اطلاعات شخصی شما پیدا نشد، در صورت کشف نشتی جدید در مقیاس بزرگ، بلافاصله به شما اطلاع داده می شود.'
-                        });
-                    }
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Server error',
-                        confirmButtonText: "باشه",
-                        text: res.error
-                    });
-                }
-            })
-            .catch(error => {
-                $('#subscribe').removeAttr('disabled');
-                Swal.close();
-                showToast('خطا در ارتباط با سرور', 'error');
-            });
-    }).catch(error => {
-        $('#subscribe').removeAttr('disabled');
-        Swal.close();
-        showToast('خطا در تأیید امنیتی', 'error');
+// Notify
+function post_form(url, data) {
+    return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+    }).then(function (response) {
+        return response.json();
     });
 }
 
-// Subscription Status
-function subscription_status_func(form) {
-    $('#query').attr('disabled', true);
-    
+function notify_link_func(form) {
+    if (checkDailyLimit("notifyLinkCount", 5, "سقف ارسال لینک امروزت تموم شد! فردا دوباره امتحان کن.")) {
+        return;
+    }
+    incrementDailyCount("notifyLinkCount");
+
+    $('#notify_link').attr('disabled', true);
+
     showToast('درحال بررسی امنیتی...');
-    
+
+    let email = normalizeEmail(form.notify_link_form_email.value);
+
     getTurnstileToken().then(function (token) {
-        showToast('درحال بررسی وضعیت...');
-        
-        let formData = new URLSearchParams({
-            "email": normalizeEmail(form.email.value),
+        showToast('درحال ارسال...');
+
+        post_form('/api/notify.php', {
+            "action": "send_link",
+            "email": email,
             "token": token
-        });
-        fetch('/api/subscription_status.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString()
         })
             .then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                $('#query').removeAttr('disabled');
+                $('#notify_link').removeAttr('disabled');
                 Swal.close();
                 if (res.status == 0) {
-                    if (res.result == 'not_subscribed') {
-                        $('.searchForm').hide();
-                        $('.subForm').show();
-                        $('#subscribe_form_email').val(normalizeEmail(form.email.value));
-                    } else if (res.result == 'verification_pending') {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'آدرس تایید نشده',
-                            confirmButtonText: "باشه",
-                            html: 'این  آدرس ایمیل در سامانه باخبرم کن ثبت شده اما هنوز تایید نشده است، لطفا با مراجعه به صندوق ورودی (Inbox) و بازکردن لینک ارسال شده، آدرس خود را تایید کنید.'
-                        });
-                    } else if (res.result == 'subscribed') {
-                        $('.searchForm').hide();
-                        $('.unSubForm').show();
-                        $('#unsubscribe_form_email').val(normalizeEmail(form.email.value));
-                    }
+                    $('#notify_link_form').hide();
+                    $('#notify_link_sent').show();
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -689,68 +630,41 @@ function subscription_status_func(form) {
                 }
             })
             .catch(error => {
-                $('#query').removeAttr('disabled');
+                $('#notify_link').removeAttr('disabled');
                 Swal.close();
                 showToast('خطا در ارتباط با سرور', 'error');
             });
     }).catch(error => {
-        $('#query').removeAttr('disabled');
+        $('#notify_link').removeAttr('disabled');
         Swal.close();
         showToast('خطا در تأیید امنیتی', 'error');
     });
 }
 
-// Unsubscribe
-function unsubscribe_func(form) {
-    $('#unsubscribe').attr('disabled', true);
-    let hash = sha1(normalizePhone(form.unsubscribe_form_phone.value));
-    
-    showToast('درحال بررسی امنیتی...');
-    
-    getTurnstileToken().then(function (token) {
-        showToast('درحال لغو اشتراک...');
-        
-        let formData = new URLSearchParams({
-            "hash": hash,
-            "email": normalizeEmail(form.unsubscribe_form_email.value),
-            "token": token
-        });
-        fetch('/api/unsubscribe.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString()
-        })
-            .then(function (res) {
-                return res.json();
-            }).then(function (res) {
-                $('#unsubscribe').removeAttr('disabled');
-                Swal.close();
+function manage_func(action, data) {
+    let buttons = $('#manage button');
+    buttons.attr('disabled', true);
+    data.t = $('#manage').attr('data-token');
+    data.action = action;
+
+    post_form('/api/notify.php', data)
+        .then(function (res) {
+            buttons.removeAttr('disabled');
+            Swal.fire({
+                icon: res.status == 0 ? 'success' : 'error',
+                title: res.status == 0 ? 'انجام شد' : 'خطایی روی داد',
+                confirmButtonText: "باشه",
+                text: res.status == 0 ? res.message : res.error
+            }).then(function () {
                 if (res.status == 0) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'لغو اشتراک انجام شد',
-                        confirmButtonText: "باشه",
-                        html: 'شما با موفقیت اشتراک خود را از سامانه باخبرم کن لغو کردید. '
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'خطایی روی داد',
-                        confirmButtonText: "باشه",
-                        text: res.error
-                    });
+                    location.reload();
                 }
-            })
-            .catch(error => {
-                $('#unsubscribe').removeAttr('disabled');
-                Swal.close();
-                showToast('خطا در ارتباط با سرور', 'error');
             });
-    }).catch(error => {
-        $('#unsubscribe').removeAttr('disabled');
-        Swal.close();
-        showToast('خطا در تأیید امنیتی', 'error');
-    });
+        })
+        .catch(error => {
+            buttons.removeAttr('disabled');
+            showToast('خطا در ارتباط با سرور', 'error');
+        });
 }
 
 // Toast
